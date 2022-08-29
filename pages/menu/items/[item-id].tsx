@@ -5,37 +5,44 @@ import { useRouter } from "next/router";
 
 import PageLayout from "../../../comps/pageLayout";
 import ItemNavbar from "../../../comps/itemNavbar";
+import ItemDisplay from "../../../comps/item-display/itemDisplay";
 import { notArrayAndTruthy } from "../../../utils";
+import ItemImageDisplay from "../../../comps/item-display/itemImageDisplay";
+import ItemCarousel from "../../../comps/itemCarousel";
+import ItemCard from "../../../comps/itemCard";
 
-type ItemType = {
+export type ItemType = {
   id: string;
   name: string;
-  description: string;
-  currentPrice: string;
-  previousPrice: string;
+  details: string;
+  displayPrice: string;
   rating: number;
   category: string;
   tags: string[];
+  images: string[];
 };
 
 const MenuItemPage: NextPage = () => {
   const itemId = useRouter().query["item-id"];
   const [item, setItem] = useState<ItemType>();
+  const [isLoading, setIsLoading] = useState(false);
   const [similarItems, setSimilarItems] = useState<ItemType[]>();
   const [alsoLikeditems, setAlsoLikedItems] = useState<ItemType[]>();
 
   useEffect(() => {
     // get full item by ID
+    setIsLoading(true);
     setItem({
       id: notArrayAndTruthy(itemId, ""),
       name: "Cheese Burger",
-      description: "Burger description",
-      currentPrice: "3.00",
-      previousPrice: "5.00",
+      details: "Burger description",
+      displayPrice: "3.00",
       rating: 4.9,
       category: "Burgers",
       tags: ["Meals", "Burgers"],
+      images: [],
     });
+    setIsLoading(false);
   }, [itemId]);
 
   return (
@@ -47,33 +54,89 @@ const MenuItemPage: NextPage = () => {
       </Head>
 
       <main>
-        <ItemNavbar />
-        <div className="w-full h-96 bg-cyan-500"></div>
-        <div className="flex flex-row py-2 justify-center">
-          <div className="w-2 h-2 mx-1 bg-blue-500 rounded-full"></div>
-          <div className="w-2 h-2 mx-1 bg-slate-500 rounded-full"></div>
-          <div className="w-2 h-2 mx-1 bg-slate-500 rounded-full"></div>
-          <div className="w-2 h-2 mx-1 bg-slate-500 rounded-full"></div>
-          <div className="w-2 h-2 mx-1 bg-slate-500 rounded-full"></div>
-        </div>
-        <div className="mx-4 mb-3">
-          <div className="flex flex-col">
-            <h1>{item?.name}</h1>
-            <div>{item?.category}</div>
-            <div className="flex flex-row space-x-2">
-              <span className="line-through text-slate-500">
-                &#36; {item?.previousPrice}
-              </span>
-              <span>&#36; {item?.currentPrice}</span>
-              <span>{"(% Off)"}</span>
-            </div>
+        {isLoading && !item && <div>Loading...</div>}
+        {!isLoading && item && (
+          <>
+            <ItemNavbar />
+            <ItemImageDisplay images={item.images} />
+            <div className="mx-4 mb-3">
+              <ItemDisplay item={item} />
+              <div>
+                <div>
+                  <h5>Similar Products</h5>
+                  <ItemCarousel>
+                    <ItemCard
+                      name="Item name 1"
+                      category="Cold Drink"
+                      price="$48"
+                      itemId="1"
+                    />
+                    <ItemCard
+                      name="Item name 2"
+                      category="Hot Drink"
+                      price="$48"
+                      itemId="2"
+                    />
+                    <ItemCard
+                      name="Item name 3"
+                      category="Alcoholic Drink"
+                      price="$48"
+                      itemId="3"
+                    />
+                    <ItemCard
+                      name="Item name 4"
+                      category="Breakfast"
+                      price="$48"
+                      itemId="1"
+                    />
+                    <ItemCard
+                      name="Item name 5"
+                      category="Lunch"
+                      price="$48"
+                      itemId="1"
+                    />
+                  </ItemCarousel>
+                </div>
 
-            <div>
-              <p>Details</p>
+                <div>
+                  <h5>Customers also like</h5>
+                  <ItemCarousel>
+                    <ItemCard
+                      name="Item name 1"
+                      category="Cold Drink"
+                      price="$48"
+                      itemId="1"
+                    />
+                    <ItemCard
+                      name="Item name 2"
+                      category="Hot Drink"
+                      price="$48"
+                      itemId="2"
+                    />
+                    <ItemCard
+                      name="Item name 3"
+                      category="Alcoholic Drink"
+                      price="$48"
+                      itemId="3"
+                    />
+                    <ItemCard
+                      name="Item name 4"
+                      category="Breakfast"
+                      price="$48"
+                      itemId="1"
+                    />
+                    <ItemCard
+                      name="Item name 5"
+                      category="Lunch"
+                      price="$48"
+                      itemId="1"
+                    />
+                  </ItemCarousel>
+                </div>
+              </div>
             </div>
-          </div>
-          <div>Similar Products</div>
-        </div>
+          </>
+        )}
       </main>
     </PageLayout>
   );

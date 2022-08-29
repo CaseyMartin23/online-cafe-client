@@ -23,12 +23,6 @@ const MenuItems: NextPage = (props) => {
     layoutOptions[0]
   );
 
-  console.log("query:", query);
-  console.log("searchInputValue:", searchInputValue);
-  console.log("selectedFilters:", selectedFilters);
-  console.log("sortSearch:", sortSearch);
-  console.log("selectedLayout:", selectedLayout);
-
   const onFiltersUpdate = (newFilters: string[]) => {
     setSelectedFilters(newFilters);
   };
@@ -106,12 +100,6 @@ const MenuItems: NextPage = (props) => {
             price="$25"
             itemId="1"
           />
-          {/* <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
           <ItemCard
             name="Item 1"
             category="Cold Drink"
@@ -124,96 +112,6 @@ const MenuItems: NextPage = (props) => {
             price="$25"
             itemId="1"
           />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          /> */}
         </div>
         <div>
           <PaginationTabs />

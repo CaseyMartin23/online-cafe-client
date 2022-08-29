@@ -11,7 +11,7 @@ type ItemCardProps = {
 
 const NewItemLabel: React.FC<{ display: boolean }> = ({ display }) => {
   return display ? (
-    <div className="flex w-40 justify-end">
+    <div className="flex w-full justify-end">
       <div className="w-fit p-1 rounded text-white bg-accent-color">new</div>
     </div>
   ) : null;
@@ -28,7 +28,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
     <Link href={`/menu/items/${itemId}`}>
       <a>
         <div className="mx-2 my-2">
-          <div className="w-40 h-60 bg-cyan-600 rounded-lg">
+          <div className="w-44 h-60 bg-cyan-600 rounded-lg">
             <NewItemLabel display={isNew} />
           </div>
           <h3 className="mt-3 text-sm">{name}</h3>

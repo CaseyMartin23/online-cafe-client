@@ -8,17 +8,10 @@ const Navbar: React.FC = (props) => {
         <h1 className="text-xl text-accent-color font-bold mr-auto my-auto">
           Online Cafe
         </h1>
-        <Link href="/menu/items">
-          <a>
-            <div className="mx-1 px-2 py-1 rounded-md text-lg text-dark-brown">
-              search
-            </div>
-          </a>
-        </Link>
         <Link href="/login">
           <a>
-            <div className="mx-1 px-2 py-1 rounded-md text-lg text-accent-color border-2 border-accent-color">
-              Signup
+            <div className="px-2 py-2 rounded-md text-lg text-white bg-accent-color">
+              [] Signup
             </div>
           </a>
         </Link>
