@@ -10,9 +10,9 @@ import {
   layoutOptions,
 } from "../../comps/search-bar/searchBarOptions";
 import { MenuTabs, MenuTabContent } from "../../comps/tabMenu";
-import MealsTab from "../../comps/tab-content/meals";
-import DrinksTab from "../../comps/tab-content/drinks";
-import DessertsTab from "../../comps/tab-content/desserts";
+import MealsTab from "../../comps/menu-tab-content/meals";
+import DrinksTab from "../../comps/menu-tab-content/drinks";
+import DessertsTab from "../../comps/menu-tab-content/desserts";
 
 const MenuPage: NextPage = (props) => {
   const router = useRouter();

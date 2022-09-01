@@ -28,7 +28,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
     <Link href={`/menu/items/${itemId}`}>
       <a>
         <div className="mx-2 my-2">
-          <div className="w-44 h-60 bg-cyan-600 rounded-lg">
+          <div className="w-40 h-60 bg-cyan-600 rounded-lg">
             <NewItemLabel display={isNew} />
           </div>
           <h3 className="mt-3 text-sm">{name}</h3>
