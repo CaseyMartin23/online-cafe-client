@@ -7,8 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build-dev-img": "docker build --target dev -t online-cafe/client:dev .",
-    "run-dev-con": "docker run -dp 3223:3000 online-cafe/client:dev",
     "build-prod-img": "docker build -t online-cafe/client .",
     "run-prod-con": "docker run -dp 3223:3000 online-cafe/client"
   },

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { NextPage } from "next";
-import PageLayout from "../comps/pageLayout";
 import Head from "next/head";
-import CheckoutNavbar from "../comps/checkout/navbar";
+import { useRouter } from "next/router";
+
+import PageLayout from "../comps/pageLayout";
+import BackwardsNavbar from "../comps/checkout/backwardsNavbar";
 import CheckoutProgressbar from "../comps/checkout/progressbar";
 import CheckoutProgressContent from "../comps/checkout/progressbar-content/progressbarContent";
 
@@ -17,20 +19,33 @@ export enum PaymentMethods {
   Paypal = "PAYPAL",
 }
 
+export type AddressType = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  streetAddress: string;
+  aptAddress: string;
+  city: string;
+  country: string;
+  zip: string;
+  isSelected: boolean;
+};
+
 const checkout: NextPage = () => {
   const [progressState, setProgressState] = useState<CheckoutProgressStates>(
     CheckoutProgressStates.Address
   );
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState<AddressType>();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethods>(
     PaymentMethods.Card
   );
+  const { push } = useRouter();
 
   const onProgressStateChange = (newState: CheckoutProgressStates) => {
     setProgressState(newState);
   };
 
-  const onAddressChange = (newAddress: string) => {
+  const onAddressChange = (newAddress: AddressType) => {
     setAddress(newAddress);
   };
 
@@ -47,7 +62,7 @@ const checkout: NextPage = () => {
       </Head>
 
       <main className="flex flex-col flex-grow">
-        <CheckoutNavbar />
+        <BackwardsNavbar onReturnClick={() => push("/cart")} />
         <CheckoutProgressbar
           state={progressState}
           onStateChange={onProgressStateChange}

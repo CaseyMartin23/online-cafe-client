@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import {
+  AddressType,
   CheckoutProgressStates,
   PaymentMethods,
 } from "../../../pages/checkout";
@@ -8,7 +9,7 @@ import AddressContent from "./address/addressContent";
 
 type CheckoutProgressContentProps = {
   state: CheckoutProgressStates;
-  addressChangeHandler: (value: string) => void;
+  addressChangeHandler: (value: AddressType) => void;
   paymentChangeHandler: (value: PaymentMethods) => void;
 };
 
