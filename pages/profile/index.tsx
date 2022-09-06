@@ -2,7 +2,7 @@ import React from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 
-import PageLayout from "../comps/pageLayout";
+import PageLayout from "../../comps/pageLayout";
 
 const ProfilePage: NextPage = (props) => {
   return (

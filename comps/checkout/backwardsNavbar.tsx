@@ -2,10 +2,14 @@ import React from "react";
 import Link from "next/link";
 
 type BackwardsNavbarProps = {
+  label: string;
   onReturnClick: () => void;
 };
 
-const BackwardsNavbar: React.FC<BackwardsNavbarProps> = ({ onReturnClick }) => {
+const BackwardsNavbar: React.FC<BackwardsNavbarProps> = ({
+  onReturnClick,
+  label,
+}) => {
   return (
     <div className="flex flex-row border-b w-full">
       <div onClick={onReturnClick} className="p-3">
@@ -21,6 +25,9 @@ const BackwardsNavbar: React.FC<BackwardsNavbarProps> = ({ onReturnClick }) => {
             clipRule="evenodd"
           />
         </svg>
+      </div>
+      <div className="flex items-center">
+        <h3 className="text-lg">{label}</h3>
       </div>
     </div>
   );

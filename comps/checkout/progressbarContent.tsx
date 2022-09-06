@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
 
-import {
+import { CheckoutProgressStates, PaymentMethods } from "../../pages/checkout";
+import DeliveryAddresses, {
   AddressType,
-  CheckoutProgressStates,
-  PaymentMethods,
-} from "../../../pages/checkout";
-import AddressContent from "./address/addressContent";
+} from "../../pages/profile/addresses/index";
 
 type CheckoutProgressContentProps = {
   state: CheckoutProgressStates;
-  addressChangeHandler: (value: AddressType) => void;
-  paymentChangeHandler: (value: PaymentMethods) => void;
 };
 
 type ProgressStatesContentType = {
   value: CheckoutProgressStates;
   Content: React.FC<any>;
-  params: any[];
 };
 
 const PaymentContent: React.FC = () => {
@@ -29,26 +24,21 @@ const SummaryContent: React.FC = () => {
 
 const CheckoutProgressContent: React.FC<CheckoutProgressContentProps> = ({
   state,
-  addressChangeHandler,
-  paymentChangeHandler,
 }) => {
   const [contentIndex, setContentIndex] = useState(0);
   const { Address, Payment, Summary } = CheckoutProgressStates;
   const ProgressStatesContent: ProgressStatesContentType[] = [
     {
       value: Address,
-      Content: AddressContent,
-      params: [addressChangeHandler],
+      Content: DeliveryAddresses,
     },
     {
       value: Payment,
       Content: PaymentContent,
-      params: [paymentChangeHandler],
     },
     {
       value: Summary,
       Content: SummaryContent,
-      params: [],
     },
   ];
 
@@ -60,9 +50,9 @@ const CheckoutProgressContent: React.FC<CheckoutProgressContentProps> = ({
 
   return (
     <div className="flex flex-grow h-full">
-      {ProgressStatesContent.map(({ value, Content, params }, index) => {
+      {ProgressStatesContent.map(({ value, Content }, index) => {
         if (contentIndex === index) {
-          return <Content key={`${value}-key-${index}`} {...params} />;
+          return <Content key={`${value}-key-${index}`} />;
         }
       })}
     </div>

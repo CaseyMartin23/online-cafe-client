@@ -25,3 +25,7 @@ a {
   -webkit-filter: blur(2px);
   border-radius: 0.5rem;
 }
+
+.address-item-container {
+  max-height: 600px;
+}
