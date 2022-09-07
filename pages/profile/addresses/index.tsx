@@ -1,5 +1,7 @@
+import Head from "next/head";
 import Link from "next/link";
 import React, { useState } from "react";
+import PageLayout from "../../../comps/pageLayout";
 
 export type AddressType = {
   id: string;
@@ -154,29 +156,39 @@ const DeliveryAddresses: React.FC<{ lable?: string }> = ({ lable }) => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="flex flex-row w-full px-2 pt-3">
-        <div className="flex items-center mr-auto">
-          <h2 className="text-xl font-medium">Your Addresses</h2>
-        </div>
-        <Link href="/profile/addresses/new-address">
-          <a className="bg-accent-color text-white px-4 py-2 rounded">
-            Add Address
-          </a>
-        </Link>
-      </div>
+    <PageLayout>
+      <Head>
+        <title>Online Cafe | Delivery Addresses</title>
+        <meta name="description" content="An online cafe store!" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-      <div className="flex flex-col flex-grow address-item-container overflow-x-auto px-3 py-1 mt-3 mb-5">
-        {allAddresses.map((address, index) => (
-          <AddressItem
-            key={`${address.id}-${index}`}
-            address={address}
-            removeAddress={removeAddress}
-            selectAddress={selectAddress}
-          />
-        ))}
-      </div>
-    </div>
+      <main>
+        <div className="flex flex-col h-full w-full">
+          <div className="flex flex-row w-full px-2 pt-3">
+            <div className="flex items-center mr-auto">
+              <h2 className="text-xl font-medium">Your Addresses</h2>
+            </div>
+            <Link href="/profile/addresses/new-address">
+              <a className="bg-accent-color text-white px-4 py-2 rounded">
+                Add Address
+              </a>
+            </Link>
+          </div>
+
+          <div className="flex flex-col flex-grow address-item-container overflow-x-auto px-3 py-1 mt-3 mb-5">
+            {allAddresses.map((address, index) => (
+              <AddressItem
+                key={`${address.id}-${index}`}
+                address={address}
+                removeAddress={removeAddress}
+                selectAddress={selectAddress}
+              />
+            ))}
+          </div>
+        </div>
+      </main>
+    </PageLayout>
   );
 };
 

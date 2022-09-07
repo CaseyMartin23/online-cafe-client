@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AddressType } from "../../pages/profile/addresses/index";
-import BackwardsNavbar from "../checkout/backwardsNavbar";
+import BackwardsNavbar from "../backwardsNavbar";
 
 type AddressFormProps = {
   editAddress?: AddressType;

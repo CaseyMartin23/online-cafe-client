@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
-import { useRouter } from "next/router";
 
 import PageLayout from "../comps/pageLayout";
-import BackwardsNavbar from "../comps/checkout/backwardsNavbar";
+import BackwardsNavbar from "../comps/backwardsNavbar";
 import CheckoutProgressbar from "../comps/checkout/progressbar";
 import CheckoutProgressContent from "../comps/checkout/progressbarContent";
 
@@ -13,11 +12,6 @@ export enum CheckoutProgressStates {
   Address = "ADDRESS",
   Payment = "PAYMENT",
   Summary = "SUMMARY",
-}
-
-export enum PaymentMethods {
-  Card = "CARD",
-  Paypal = "PAYPAL",
 }
 
 const checkout: NextPage = () => {

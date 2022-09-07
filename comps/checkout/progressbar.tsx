@@ -14,6 +14,11 @@ type ProgressbarItemProps = {
   clickHandler: () => void;
 };
 
+type CheckoutProgressType = {
+  label: string;
+  handleClick: () => void;
+};
+
 const ProgressbarItem: React.FC<ProgressbarItemProps> = ({
   label,
   number,
@@ -65,7 +70,7 @@ const CheckoutProgressbar: React.FC<CheckoutProgressbarProps> = ({
   onStateChange,
 }) => {
   const { push } = useRouter();
-  const checkoutProgress = [
+  const checkoutProgress: CheckoutProgressType[] = [
     {
       label: "Cart",
       handleClick: () => push("/cart"),
