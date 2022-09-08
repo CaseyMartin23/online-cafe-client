@@ -35,9 +35,8 @@ const AddressForm: React.FC<AddressFormProps> = ({ editAddress }) => {
   const onAddressFormChange = ({
     target,
   }: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = target;
-    const field = target.dataset.field;
-
+    const { value, dataset } = target;
+    const { field } = dataset;
     setFormData({ ...formData, [`${field}`]: value });
   };
 

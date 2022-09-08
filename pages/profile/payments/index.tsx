@@ -13,7 +13,6 @@ export enum PaymentMethods {
 
 type PaymentMethodItemProps = {
   item: PaymentMethodItemType;
-  isChecked: boolean;
   clickHandler: (value: PaymentMethods) => void;
 };
 
@@ -25,16 +24,13 @@ type PaymentMethodItemType = {
 
 const PaymentMethodItem: React.FC<PaymentMethodItemProps> = ({
   item,
-  isChecked,
   clickHandler,
 }) => {
   const { icon, label, slug } = item;
   return (
     <div
       onClick={() => clickHandler(slug)}
-      className={`flex flex-row py-5 px-3 border-b ${
-        isChecked ? "bg-cyan-100" : "bg-white"
-      }`}
+      className="flex flex-row py-5 px-3 border-b bg-white"
     >
       <div>{icon}</div>
       <div className="pl-3">{label}</div>
@@ -44,9 +40,6 @@ const PaymentMethodItem: React.FC<PaymentMethodItemProps> = ({
 
 const MethodOfPayments: NextPage = () => {
   const { push } = useRouter();
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethods>(
-    PaymentMethods.Card
-  );
   const paymentMethods: PaymentMethodItemType[] = [
     {
       label: "Debit or Credit Card",
@@ -61,8 +54,7 @@ const MethodOfPayments: NextPage = () => {
   ];
 
   const onMethodSelect = (slug: PaymentMethods) => {
-    setSelectedMethod(slug);
-    push(`/profile/payments/${slug}`);
+    push(`/profile/payments/${slug.toLocaleLowerCase()}`);
   };
 
   return (
@@ -84,7 +76,6 @@ const MethodOfPayments: NextPage = () => {
             <PaymentMethodItem
               key={`${method.label}-${indx}`}
               item={method}
-              isChecked={method.slug === selectedMethod}
               clickHandler={onMethodSelect}
             />
           ))}
