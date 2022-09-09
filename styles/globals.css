@@ -29,3 +29,20 @@ a {
 .address-item-container {
   max-height: 600px;
 }
+
+.order-item-image-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.order-item-image {
+  display: inline-block;
+  min-width: 80px;
+  min-height: 80px;
+  margin-left: 4px;
+  margin-right: 4px;
+}
