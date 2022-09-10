@@ -24,52 +24,57 @@ const AddressItem: React.FC<AddressItemProps> = ({
     country,
     zip,
     phoneNumber,
-    isDefault,
+    isSelected,
   } = address;
 
   return (
-    <div className="flex flex-col p-2 my-2 border border-accent-color rounded">
-      <div className="flex flex-row mb-2">
-        <span className="mr-auto">
-          {firstName} {lastName}
-        </span>
-        <div>{isDefault ? "[X]" : "[ ]"}</div>
+    <div
+      className={`flex flex-col p-3 my-2 bg-white rounded ${
+        isSelected && "border border-accent-color"
+      }`}
+    >
+      <div className="px-2">
+        <div className="flex flex-row mb-2">
+          <span className="mr-auto">
+            {firstName} {lastName}
+          </span>
+          <div>{isSelected ? "[X]" : "[ ]"}</div>
+        </div>
+        <div className="mb-2">
+          <p>
+            {streetAddress}
+            <br />
+            {aptAddress}
+            <br />
+            {city}
+            <br />
+            {state}
+            <br />
+            {country}
+            <br />
+            {zip}
+          </p>
+        </div>
+        <div>{phoneNumber}</div>
       </div>
-      <div className="mb-2">
-        <p>
-          {streetAddress}
-          <br />
-          {aptAddress}
-          <br />
-          {city}
-          <br />
-          {state}
-          <br />
-          {country}
-          <br />
-          {zip}
-        </p>
-      </div>
-      <div>{phoneNumber}</div>
       <div className="flex flex-row mt-3 justify-end">
         <button
           onClick={() => removeAddress(id)}
-          className="rounded w-full p-2 bg-red-600 text-white -color mr-2"
+          className="rounded w-full p-2 border border-red-600 text-red-600 mr-2 h-12"
         >
           Remove
         </button>
         <Link href={`/profile/addresses/form?item=${id}`}>
-          <a className="text-center rounded w-full p-2 bg-white text-accent-color border border-accent-color mr-2">
+          <a className="flex items-center justify-center rounded w-full p-2 bg-white text-accent-color border border-accent-color mr-2 h-12">
             Edit
           </a>
         </Link>
         <button
-          disabled={isDefault}
+          disabled={isSelected}
           onClick={() => selectAddress(id)}
-          //
           className={`rounded w-full p-2 ${
-            isDefault ? "bg-blue-400" : "bg-accent-color"
-          } text-white`}
+            isSelected ? "bg-blue-400" : "bg-accent-color"
+          } text-white h-12`}
         >
           Deliver Here
         </button>
@@ -91,7 +96,7 @@ const AddressDisplay: React.FC = () => {
       country: "TEST-COUNTRY-01",
       zip: "TEST-ZIP-01",
       phoneNumber: "TEST-PHONENUMBER-01",
-      isDefault: true,
+      isSelected: true,
     },
     {
       id: "ID-TEST-02",
@@ -104,7 +109,7 @@ const AddressDisplay: React.FC = () => {
       country: "TEST-COUNTRY-02",
       zip: "TEST-ZIP-02",
       phoneNumber: "TEST-PHONENUMBER-02",
-      isDefault: false,
+      isSelected: false,
     },
     {
       id: "ID-TEST-03",
@@ -117,13 +122,14 @@ const AddressDisplay: React.FC = () => {
       country: "TEST-COUNTRY-03",
       zip: "TEST-ZIP-03",
       phoneNumber: "TEST-PHONENUMBER-03",
-      isDefault: false,
+      isSelected: false,
     },
   ]);
 
   const removeAddress = (addressId: string) => {
     const addresses = [...allAddresses];
     const newAddresses = addresses.filter(({ id }) => id !== addressId);
+    selectAddress(newAddresses[0].id);
     setAllAddresses(newAddresses);
   };
 
@@ -131,26 +137,26 @@ const AddressDisplay: React.FC = () => {
     const addresses = [...allAddresses];
     const [newSelectedAddress] = addresses.filter(({ id }) => id === addressId);
     const [currentSelectedAddress] = addresses.filter(
-      ({ isDefault }) => isDefault
+      ({ isSelected }) => isSelected
     );
 
-    if (currentSelectedAddress) currentSelectedAddress.isDefault = false;
-    if (newSelectedAddress) newSelectedAddress.isDefault = true;
+    if (currentSelectedAddress) currentSelectedAddress.isSelected = false;
+    if (newSelectedAddress) newSelectedAddress.isSelected = true;
 
     setAllAddresses([...addresses]);
   };
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="flex flex-row w-full px-2 pt-3 justify-end">
+    <div className="flex flex-col h-full w-full bg-slate-200">
+      <div className="flex flex-row w-full px-2 pt-3">
         <Link href="/profile/addresses/form">
-          <a className="bg-accent-color text-white px-4 py-2 rounded">
-            Add Address
+          <a className="font-medium text-accent-color px-4 py-2">
+            + Add Address
           </a>
         </Link>
       </div>
 
-      <div className="flex flex-col flex-grow address-item-container overflow-x-auto px-3 py-1 mt-3 mb-5">
+      <div className="flex flex-col flex-grow address-item-container overflow-x-auto px-3 py-1 mt-1 mb-5">
         {allAddresses.map((address, index) => (
           <AddressItem
             key={`${address.id}-${index}`}

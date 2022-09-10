@@ -29,12 +29,12 @@ const PaypalItem: React.FC<PaypalItemProps> = ({ item, onRemove }) => {
       <div className="flex flex-row justify-end">
         <button
           onClick={() => onRemove(id)}
-          className="bg-red-600 text-white rounded w-20 px-3 py-2 mr-2"
+          className="border border-red-600 text-red-600 rounded w-20 px-3 py-2 mr-2"
         >
           Remove
         </button>
         <Link href={`/profile/payments/paypal/form?item=${id}`}>
-          <a className="bg-accent-color text-center text-white rounded w-20 px-3 py-2">
+          <a className="border border-accent-color text-center text-accent-color rounded w-20 px-3 py-2">
             Edit
           </a>
         </Link>
@@ -89,11 +89,11 @@ const PaypalPaymentMethod: NextPage = (props) => {
       <main>
         <BackwardsNavbar label="Paypal Accounts" />
 
-        <div className="flex flex-col flex-grow p-4 bg-slate-100">
-          <div className="flex flex-row justify-end mb-5">
+        <div className="flex flex-col flex-grow p-4 bg-slate-200">
+          <div className="flex flex-row">
             <Link href="/profile/payments/paypal/form">
-              <a className="bg-accent-color text-white rounded px-3 py-2">
-                Add Paypal
+              <a className="font-medium text-accent-color rounded px-3 py-2">
+                + Add Paypal Account
               </a>
             </Link>
           </div>

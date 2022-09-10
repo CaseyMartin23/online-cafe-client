@@ -14,6 +14,7 @@ type SearchBarOptionProps = {
 
 type SearchBarOptionsModalProps = {
   isOpen: boolean;
+  closeModal: () => void;
   optionsToDisplay: ModalDisplayOptions | null;
   filtersSelected: string[];
   updateSelectedFilters: (value: string[]) => void;
@@ -146,13 +147,13 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({
       </OptionsWrapper>
       <div className="flex justify-end">
         <button
-          className="p-2 bg-red-600 text-white rounded mt-4 mr-3 w-20"
+          className="p-2 border border-red-600 text-red-600 rounded mt-4 mr-3 w-20"
           onClick={onFiltersClear}
         >
           Clear
         </button>
         <button
-          className="p-2 bg-accent-color text-white rounded mt-4 w-20"
+          className="p-2 border border-accent-color text-accent-color rounded mt-4 w-20"
           onClick={onFiltersSave}
         >
           Save
@@ -196,6 +197,7 @@ const OptionsWrapper: React.FC<{ children: any }> = ({ children }) => {
 
 export const SearchBarOptionsModal: React.FC<SearchBarOptionsModalProps> = ({
   isOpen,
+  closeModal,
   optionsToDisplay,
   filtersSelected,
   updateSelectedFilters,
@@ -204,7 +206,7 @@ export const SearchBarOptionsModal: React.FC<SearchBarOptionsModalProps> = ({
   layoutOptionSelected,
   updateSelectedLayoutOption,
 }) => {
-  const router = useRouter();
+  const { push } = useRouter();
   const openModalOptionClass = isOpen ? "" : " hidden";
   const optionsModalClasses = `z-10 bg-white shadow shadow-black p-3 absolute w-80 top-full rounded-br-lg rounded-bl-lg${openModalOptionClass}`;
   const displayFilterOptions = optionsToDisplay === ModalDisplayOptions.Filter;
@@ -212,8 +214,9 @@ export const SearchBarOptionsModal: React.FC<SearchBarOptionsModalProps> = ({
   const displayLayoutOptions = optionsToDisplay === ModalDisplayOptions.Layout;
 
   const redirectToMenuItems = (urlQuery: string) => {
-    const menuItemBaseUrl = "/menu/items?";
-    router.push(`${menuItemBaseUrl}${urlQuery}`);
+    const menuItemBaseUrl = "/menu/items";
+    closeModal();
+    push(`${menuItemBaseUrl}?${urlQuery}`);
   };
 
   const onFilterOptionSave = (arrayOfFilters: string[]) => {

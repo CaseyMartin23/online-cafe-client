@@ -1,6 +1,6 @@
+import React from "react";
 import Head from "next/head";
-import Link from "next/link";
-import React, { useState } from "react";
+
 import AddressDisplay from "../../../comps/address/addressDisplay";
 import BackwardsNavbar from "../../../comps/backwardsNavbar";
 import PageLayout from "../../../comps/pageLayout";
@@ -16,7 +16,7 @@ export type AddressType = {
   country: string;
   zip: string;
   phoneNumber: string;
-  isDefault: boolean;
+  isSelected: boolean;
 };
 
 const DeliveryAddresses: React.FC = () => {

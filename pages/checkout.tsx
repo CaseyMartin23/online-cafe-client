@@ -23,6 +23,10 @@ const checkout: NextPage = () => {
     setProgressState(newState);
   };
 
+  const changeState = (newState: CheckoutProgressStates) => {
+    setProgressState(newState);
+  };
+
   return (
     <PageLayout>
       <Head>
@@ -37,7 +41,10 @@ const checkout: NextPage = () => {
           state={progressState}
           onStateChange={onProgressStateChange}
         />
-        <CheckoutProgressContent state={progressState} />
+        <CheckoutProgressContent
+          state={progressState}
+          updateState={changeState}
+        />
       </main>
     </PageLayout>
   );

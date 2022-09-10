@@ -31,6 +31,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [displayedOptions, setDisplayedOptions] =
     useState<ModalDisplayOptions | null>(null);
 
+  const onCloseModal = () => {
+    console.log("Closed Modal");
+    setDisplayedOptions(null);
+    setIsOptionsModalOpen(false);
+  };
+
   const toggleOptionsModal = (modalOptionToDisplay: ModalDisplayOptions) => {
     setIsOptionsModalOpen(!isOptionsModalOpen);
 
@@ -74,6 +80,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </div>
         <SearchBarOptionsModal
           isOpen={isOptionsModalOpen}
+          closeModal={onCloseModal}
           optionsToDisplay={displayedOptions}
           filtersSelected={selectedFilters}
           updateSelectedFilters={updateSelectedFilters}
