@@ -3,16 +3,12 @@ import Link from "next/link";
 
 type BackwardsNavbarProps = {
   label: string;
-  onReturnClick: () => void;
 };
 
-const BackwardsNavbar: React.FC<BackwardsNavbarProps> = ({
-  onReturnClick,
-  label,
-}) => {
+const BackwardsNavbar: React.FC<BackwardsNavbarProps> = ({ label }) => {
   return (
     <div className="flex flex-row border-b w-full">
-      <div onClick={onReturnClick} className="p-3">
+      <div onClick={() => history.back()} className="p-3">
         <svg
           className="h-5 w-5"
           xmlns="http://www.w3.org/2000/svg"

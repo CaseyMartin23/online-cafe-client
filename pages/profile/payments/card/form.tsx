@@ -52,10 +52,7 @@ const CardItemEditForm: NextPage = () => {
 
   return (
     <div>
-      <BackwardsNavbar
-        label={editCardItemId ? "Edit Card" : "Add Card"}
-        onReturnClick={() => history.back()}
-      />
+      <BackwardsNavbar label={editCardItemId ? "Edit Card" : "Add Card"} />
 
       <div className="flex flex-col px-4 items-center">
         <div className="w-full mb-48">

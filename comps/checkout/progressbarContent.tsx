@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-
-import { CheckoutProgressStates, PaymentMethods } from "../../pages/checkout";
-import DeliveryAddresses, {
-  AddressType,
-} from "../../pages/profile/addresses/index";
+import { CheckoutProgressStates } from "../../pages/checkout";
+import AddressDisplay from "../address/addressDisplay";
 
 type CheckoutProgressContentProps = {
   state: CheckoutProgressStates;
@@ -30,7 +27,7 @@ const CheckoutProgressContent: React.FC<CheckoutProgressContentProps> = ({
   const ProgressStatesContent: ProgressStatesContentType[] = [
     {
       value: Address,
-      Content: DeliveryAddresses,
+      Content: AddressDisplay,
     },
     {
       value: Payment,

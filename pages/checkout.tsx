@@ -32,10 +32,7 @@ const checkout: NextPage = () => {
       </Head>
 
       <main className="flex flex-col flex-grow">
-        <BackwardsNavbar
-          label="Checkout Process"
-          onReturnClick={() => history.back()}
-        />
+        <BackwardsNavbar label="Checkout Process" />
         <CheckoutProgressbar
           state={progressState}
           onStateChange={onProgressStateChange}

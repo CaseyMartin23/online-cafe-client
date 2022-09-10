@@ -1,20 +1,15 @@
 import React, { useState } from "react";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
 import Head from "next/head";
 
 import PageLayout from "../../../comps/pageLayout";
 import BackwardsNavbar from "../../../comps/backwardsNavbar";
+import Link from "next/link";
 
 export enum PaymentMethods {
   Card = "CARD",
   Paypal = "PAYPAL",
 }
-
-type PaymentMethodItemProps = {
-  item: PaymentMethodItemType;
-  clickHandler: (value: PaymentMethods) => void;
-};
 
 type PaymentMethodItemType = {
   label: string;
@@ -22,24 +17,24 @@ type PaymentMethodItemType = {
   icon: string;
 };
 
-const PaymentMethodItem: React.FC<PaymentMethodItemProps> = ({
-  item,
-  clickHandler,
+const PaymentMethodItem: React.FC<PaymentMethodItemType> = ({
+  icon,
+  label,
+  slug,
 }) => {
-  const { icon, label, slug } = item;
   return (
-    <div
-      onClick={() => clickHandler(slug)}
-      className="flex flex-row py-5 px-3 border-b bg-white"
-    >
-      <div>{icon}</div>
-      <div className="pl-3">{label}</div>
-    </div>
+    <Link href={`/profile/payments/${slug.toLocaleLowerCase()}`}>
+      <a>
+        <div className="flex flex-row py-5 px-3 border-b bg-white">
+          <div>{icon}</div>
+          <div className="pl-3">{label}</div>
+        </div>
+      </a>
+    </Link>
   );
 };
 
-const MethodOfPayments: NextPage = () => {
-  const { push } = useRouter();
+const MethodsOfPayment: NextPage = () => {
   const paymentMethods: PaymentMethodItemType[] = [
     {
       label: "Debit or Credit Card",
@@ -53,10 +48,6 @@ const MethodOfPayments: NextPage = () => {
     },
   ];
 
-  const onMethodSelect = (slug: PaymentMethods) => {
-    push(`/profile/payments/${slug.toLocaleLowerCase()}`);
-  };
-
   return (
     <PageLayout>
       <Head>
@@ -66,18 +57,11 @@ const MethodOfPayments: NextPage = () => {
       </Head>
 
       <main className="flex flex-col flex-grow">
-        <BackwardsNavbar
-          label="Payment Methods"
-          onReturnClick={() => history.back()}
-        />
+        <BackwardsNavbar label="Payment Methods" />
 
         <div className="flex flex-col flex-grow bg-slate-100">
           {paymentMethods.map((method, indx) => (
-            <PaymentMethodItem
-              key={`${method.label}-${indx}`}
-              item={method}
-              clickHandler={onMethodSelect}
-            />
+            <PaymentMethodItem key={`${method.label}-${indx}`} {...method} />
           ))}
         </div>
       </main>
@@ -85,4 +69,4 @@ const MethodOfPayments: NextPage = () => {
   );
 };
 
-export default MethodOfPayments;
+export default MethodsOfPayment;

@@ -5,6 +5,7 @@ import Head from "next/head";
 import PageLayout from "../../../../comps/pageLayout";
 import BackwardsNavbar from "../../../../comps/backwardsNavbar";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 type DisplayCardItemType = {
   id: string;
@@ -14,11 +15,10 @@ type DisplayCardItemType = {
 
 type CardItemProps = {
   item: DisplayCardItemType;
-  editCard: (id: string) => void;
   removeCard: (id: string) => void;
 };
 
-const CardItem: React.FC<CardItemProps> = ({ item, editCard, removeCard }) => {
+const CardItem: React.FC<CardItemProps> = ({ item, removeCard }) => {
   const { id, holderName, fractalCardNumber } = item;
 
   return (
@@ -32,19 +32,17 @@ const CardItem: React.FC<CardItemProps> = ({ item, editCard, removeCard }) => {
         >
           Remove
         </button>
-        <button
-          onClick={() => editCard(id)}
-          className="bg-accent-color text-white rounded w-20 px-3 py-2"
-        >
-          Edit
-        </button>
+        <Link href={`/profile/payments/card/form?item=${id}`}>
+          <a className="bg-accent-color text-white text-center rounded w-20 px-3 py-2">
+            Edit
+          </a>
+        </Link>
       </div>
     </div>
   );
 };
 
 const CardPaymentMethod: NextPage = (props) => {
-  const { push } = useRouter();
   const [cardItems, setCardItems] = useState<DisplayCardItemType[]>([
     {
       id: "TEST-CARD-ID-01",
@@ -78,16 +76,8 @@ const CardPaymentMethod: NextPage = (props) => {
     },
   ]);
 
-  const onAddCard = () => {
-    push("/profile/payments/card/form");
-  };
-
   const onRemoveCard = (id: string) => {
     console.log("remove card item:", id);
-  };
-
-  const onEditCard = (id: string) => {
-    push(`/profile/payments/card/form?item=${id}`);
   };
 
   return (
@@ -99,19 +89,15 @@ const CardPaymentMethod: NextPage = (props) => {
       </Head>
 
       <main className="flex flex-col flex-grow">
-        <BackwardsNavbar
-          label="Debit or Credit Cards"
-          onReturnClick={() => history.back()}
-        />
+        <BackwardsNavbar label="Debit or Credit Cards" />
 
         <div className="flex flex-col flex-grow p-4 bg-slate-100">
           <div className="flex flex-row justify-end mb-5">
-            <button
-              className="bg-accent-color text-white rounded px-3 py-2"
-              onClick={onAddCard}
-            >
-              Add Card
-            </button>
+            <Link href={"/profile/payments/card/form"}>
+              <a className="bg-accent-color text-white rounded px-3 py-2">
+                Add Card
+              </a>
+            </Link>
           </div>
 
           <div className="h-96 overflow-x-auto">
@@ -119,7 +105,6 @@ const CardPaymentMethod: NextPage = (props) => {
               <CardItem
                 key={`${card.id}-${index}`}
                 item={card}
-                editCard={onEditCard}
                 removeCard={onRemoveCard}
               />
             ))}

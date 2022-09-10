@@ -1,20 +1,16 @@
 import React, { useState } from "react";
 import { NextPage } from "next";
-import PageLayout from "../../../comps/pageLayout";
 import Head from "next/head";
+import Link from "next/link";
+
+import PageLayout from "../../../comps/pageLayout";
 import BackwardsNavbar from "../../../comps/backwardsNavbar";
-import { useRouter } from "next/router";
 
 type OrderItemType = {
   id: string;
   status: string;
   images: string[];
   deliveredDate: string;
-};
-
-type OrderItemProps = {
-  orderItem: OrderItemType;
-  handleClick: (id: string) => void;
 };
 
 const OrderItemImage: React.FC<{ src: string; alt: string }> = ({
@@ -24,28 +20,31 @@ const OrderItemImage: React.FC<{ src: string; alt: string }> = ({
   return <div className="order-item-image rounded bg-cyan-400"></div>;
 };
 
-const OrderItem: React.FC<OrderItemProps> = ({ orderItem, handleClick }) => {
-  const { id, status, deliveredDate, images } = orderItem;
-
+const OrderItem: React.FC<OrderItemType> = ({
+  id,
+  status,
+  deliveredDate,
+  images,
+}) => {
   return (
-    <div
-      onClick={() => handleClick(id)}
-      className="bg-white mb-1 px-3 py-2 rounded"
-    >
-      <div className="my-1">
-        {status} {deliveredDate}
-      </div>
-      <div className="order-item-image-container">
-        {images.map((url, idx) => (
-          <OrderItemImage key={`${url}-${idx}`} src={url} alt={url} />
-        ))}
-      </div>
-    </div>
+    <Link href={`/profile/orders/${id}`}>
+      <a>
+        <div className="bg-white mb-1 px-3 py-2 rounded">
+          <div className="my-1">
+            {status} {deliveredDate}
+          </div>
+          <div className="order-item-image-container">
+            {images.map((url, idx) => (
+              <OrderItemImage key={`${url}-${idx}`} src={url} alt={url} />
+            ))}
+          </div>
+        </div>
+      </a>
+    </Link>
   );
 };
 
 const Orders: NextPage = (props) => {
-  const { push } = useRouter();
   const [allOrders, setAllOrders] = useState<OrderItemType[]>([
     {
       id: "TEST-ORDER-ID-01",
@@ -93,10 +92,6 @@ const Orders: NextPage = (props) => {
     },
   ]);
 
-  const onOrderItemClick = (id: string) => {
-    push(`/profile/orders/${id}`);
-  };
-
   return (
     <PageLayout>
       <Head>
@@ -106,20 +101,13 @@ const Orders: NextPage = (props) => {
       </Head>
 
       <main className="flex flex-col flex-grow">
-        <BackwardsNavbar
-          label="Order History"
-          onReturnClick={() => history.back()}
-        />
+        <BackwardsNavbar label="Order History" />
         <div className="flex flex-col flex-grow bg-slate-300">
           <div className="bg-white border">filter</div>
 
           <div className="p-1">
             {allOrders.map((order, index) => (
-              <OrderItem
-                key={`${order.id}-${index}`}
-                orderItem={order}
-                handleClick={onOrderItemClick}
-              />
+              <OrderItem key={`${order.id}-${index}`} {...order} />
             ))}
           </div>
         </div>

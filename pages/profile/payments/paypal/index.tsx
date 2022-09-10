@@ -1,27 +1,83 @@
-import React from "react";
+import React, { useState } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 
 import PageLayout from "../../../../comps/pageLayout";
 import BackwardsNavbar from "../../../../comps/backwardsNavbar";
 
-const PaypalItem: React.FC = () => {
+type PaypalItemType = {
+  id: string;
+  username: string;
+  email: string;
+};
+
+type PaypalItemProps = {
+  item: PaypalItemType;
+  onRemove: (id: string) => void;
+};
+
+const PaypalItem: React.FC<PaypalItemProps> = ({ item, onRemove }) => {
+  const { id, username, email } = item;
+
   return (
-    <div className="rounded bg-white p-4 my-3">
-      <div>Paypal email</div>
+    <div className="rounded bg-white p-4 mb-3">
+      <div className="flex flex-col mb-3">
+        <div>{username}</div>
+        <div>{email}</div>
+      </div>
       <div className="flex flex-row justify-end">
-        <button className="bg-red-600 text-white rounded w-20 px-3 py-2 mr-2">
+        <button
+          onClick={() => onRemove(id)}
+          className="bg-red-600 text-white rounded w-20 px-3 py-2 mr-2"
+        >
           Remove
         </button>
-        <button className="bg-accent-color text-white rounded w-20 px-3 py-2">
-          Edit
-        </button>
+        <Link href={`/profile/payments/paypal/form?item=${id}`}>
+          <a className="bg-accent-color text-center text-white rounded w-20 px-3 py-2">
+            Edit
+          </a>
+        </Link>
       </div>
     </div>
   );
 };
 
 const PaypalPaymentMethod: NextPage = (props) => {
+  const [allPaypals, setAllPaypals] = useState<PaypalItemType[]>([
+    {
+      id: "TEST-PAYPAL-ID-01",
+      username: "TEST-PAYPAL-USERNAME-01",
+      email: "TEST-PAYPAL-EMAIL-01",
+    },
+    {
+      id: "TEST-PAYPAL-ID-02",
+      username: "TEST-PAYPAL-USERNAME-02",
+      email: "TEST-PAYPAL-EMAIL-02",
+    },
+    {
+      id: "TEST-PAYPAL-ID-03",
+      username: "TEST-PAYPAL-USERNAME-03",
+      email: "TEST-PAYPAL-EMAIL-03",
+    },
+    {
+      id: "TEST-PAYPAL-ID-04",
+      username: "TEST-PAYPAL-USERNAME-04",
+      email: "TEST-PAYPAL-EMAIL-04",
+    },
+    {
+      id: "TEST-PAYPAL-ID-05",
+      username: "TEST-PAYPAL-USERNAME-05",
+      email: "TEST-PAYPAL-EMAIL-05",
+    },
+  ]);
+
+  const removePaypal = (removeId: string) => {
+    const newPaypalArray = [...allPaypals];
+    const filteredPaypals = newPaypalArray.filter(({ id }) => id !== removeId);
+    setAllPaypals(filteredPaypals);
+  };
+
   return (
     <PageLayout>
       <Head>
@@ -31,27 +87,25 @@ const PaypalPaymentMethod: NextPage = (props) => {
       </Head>
 
       <main>
-        <BackwardsNavbar
-          label="Paypal Accounts"
-          onReturnClick={() => history.back()}
-        />
+        <BackwardsNavbar label="Paypal Accounts" />
 
         <div className="flex flex-col flex-grow p-4 bg-slate-100">
           <div className="flex flex-row justify-end mb-5">
-            <button
-              className="bg-accent-color text-white rounded px-3 py-2"
-              onClick={() => console.log("Open Card Form")}
-            >
-              Add Paypal
-            </button>
+            <Link href="/profile/payments/paypal/form">
+              <a className="bg-accent-color text-white rounded px-3 py-2">
+                Add Paypal
+              </a>
+            </Link>
           </div>
 
-          <div className="h-96 overflow-x-auto">
-            <PaypalItem />
-            <PaypalItem />
-            <PaypalItem />
-            <PaypalItem />
-            <PaypalItem />
+          <div>
+            {allPaypals.map((paypal, index) => (
+              <PaypalItem
+                key={`${paypal.id}-${index}`}
+                item={paypal}
+                onRemove={removePaypal}
+              />
+            ))}
           </div>
         </div>
       </main>
