@@ -34,18 +34,20 @@ type PaymentMethodItemProps = {
   label: string;
   icon: string;
   rounded?: boolean;
+  borderless?: boolean;
 };
 
 export const PaymentMethodItem: React.FC<PaymentMethodItemProps> = ({
   label,
   icon,
   rounded,
+  borderless,
 }) => {
   return (
     <div
-      className={`flex flex-row py-5 px-3 border-b bg-white ${
-        rounded && "rounded"
-      }`}
+      className={`flex flex-row py-5 px-3 ${
+        borderless ? "" : "border-b"
+      } bg-white ${rounded && "rounded"}`}
     >
       <div>{icon}</div>
       <div className="pl-3">{label}</div>

@@ -13,7 +13,7 @@ type OrderItemType = {
   deliveredDate: string;
 };
 
-const OrderItemImage: React.FC<{ src: string; alt: string }> = ({
+export const OrderItemImage: React.FC<{ src: string; alt: string }> = ({
   src,
   alt,
 }) => {
@@ -53,6 +53,7 @@ const Orders: NextPage = (props) => {
         "TEST-ORDER-IMAGE-01",
         "TEST-ORDER-IMAGE-02",
         "TEST-ORDER-IMAGE-03",
+        "TEST-ORDER-IMAGE-04",
         "TEST-ORDER-IMAGE-04",
       ],
       deliveredDate: "TEST-ORDER-DELIVERED-DATE-01",

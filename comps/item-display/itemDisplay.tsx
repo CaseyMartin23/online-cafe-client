@@ -30,13 +30,8 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item }) => {
 
       <div className="flex justify-end">
         <Link href="/cart">
-          <a className="p-2 mx-1 text-accent-color font-medium border-2 border-accent-color rounded">
+          <a className="px-3 py-2 text-white font-medium bg-accent-color rounded">
             Add to Cart
-          </a>
-        </Link>
-        <Link href={`/cart?item=${id}`}>
-          <a className="p-2 ml-1 text-white font-medium bg-accent-color rounded">
-            Buy now
           </a>
         </Link>
       </div>

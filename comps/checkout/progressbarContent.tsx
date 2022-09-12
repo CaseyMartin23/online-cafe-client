@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { CheckoutProgressStates } from "../../pages/checkout";
 import AddressDisplay from "../address/addressDisplay";
 import PaymentDisplay from "./payment/paymentDisplay";
+import SummaryDisplay from "./summary/summaryDisplay";
 
 type CheckoutProgressContentProps = {
   state: CheckoutProgressStates;
@@ -17,10 +18,6 @@ type ProgressStatesContentType = {
 type ProceedButtonProp = {
   isLastState: boolean;
   clickHandler: () => void;
-};
-
-const SummaryContent: React.FC = () => {
-  return <div className="flex flex-col h-full w-full bg-red-600">Summary</div>;
 };
 
 const ProceedButton: React.FC<ProceedButtonProp> = ({
@@ -78,7 +75,7 @@ const CheckoutProgressContent: React.FC<CheckoutProgressContentProps> = ({
     },
     {
       value: Summary,
-      Content: SummaryContent,
+      Content: SummaryDisplay,
     },
   ];
 
