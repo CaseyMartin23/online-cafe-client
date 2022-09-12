@@ -4,7 +4,6 @@ export const stringListToArray = (stringList: string | string[] | undefined) => 
 
     const arrayOfStrings = stringList.split(",");
     const singlelistItem = [stringList];
-
     return stringList.includes(",") ? arrayOfStrings : singlelistItem;
   } else {
     return [];
