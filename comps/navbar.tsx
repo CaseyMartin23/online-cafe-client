@@ -11,7 +11,7 @@ const Navbar: React.FC = (props) => {
         <Link href="/login">
           <a>
             <div className="px-2 py-2 rounded-md text-lg text-white bg-accent-color">
-              [] Signup
+              [] Sign up
             </div>
           </a>
         </Link>

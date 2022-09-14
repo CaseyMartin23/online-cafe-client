@@ -9,8 +9,9 @@ const Layout: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const { pathname } = useRouter();
 
   const checkPathToDisplay = () => {
+    const pathNotToDisplay = ["/login", "/register", "/forgot-password"];
     let shouldDisplay = false;
-    shouldDisplay = !["/login", "/register"].includes(pathname);
+    shouldDisplay = !pathNotToDisplay.includes(pathname);
     return shouldDisplay;
   };
 

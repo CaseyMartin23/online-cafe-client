@@ -46,3 +46,22 @@ a {
   margin-left: 4px;
   margin-right: 4px;
 }
+
+.remember-me-radio-btn[type=radio] {
+  border: 1px solid #64748b;
+  border-radius: 3px;
+  padding: 5px;
+  width: 15px;
+  height: 15px;
+  margin-right: 8px;
+  -webkit-appearance: none;
+}
+
+.remember-me-radio-btn[type=radio]:checked {
+  background-color: aqua;
+  background-size: 3px 3px;
+}
+
+.remember-me-radio-btn[type=radio]:focus {
+  outline-color: transparent;
+}
