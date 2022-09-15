@@ -9,7 +9,7 @@ type MenuTabsProps = {
 
 type MenuTabContentProps = {
   currentTab: number;
-  children: JSX.Element | JSX.Element[];
+  children: React.ReactNode;
 };
 
 type MenuTabProps = {

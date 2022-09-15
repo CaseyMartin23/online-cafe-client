@@ -2,7 +2,7 @@ import React from "react";
 import { PaymentMethodItem } from "../../../pages/profile/payments";
 
 type SummaryItemWrapperProps = {
-  children: JSX.Element | JSX.Element[];
+  children: React.ReactNode;
 };
 
 const SummaryItemWrapper: React.FC<SummaryItemWrapperProps> = ({

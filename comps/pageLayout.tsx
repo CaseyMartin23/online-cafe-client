@@ -1,7 +1,7 @@
 import React from "react";
 
 type PageLayoutProps = {
-  children: JSX.Element | JSX.Element[];
+  children: React.ReactNode;
 };
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {

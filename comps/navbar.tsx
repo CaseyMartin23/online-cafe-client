@@ -8,7 +8,7 @@ const Navbar: React.FC = () => {
         <h1 className="text-xl text-accent-color font-bold mr-auto my-auto">
           Online Cafe
         </h1>
-        <Link href="/login">
+        <Link href="/register">
           <a>
             <div className="px-2 py-2 rounded-md text-lg text-white bg-accent-color">
               [] Sign up

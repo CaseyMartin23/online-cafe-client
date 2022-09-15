@@ -15,7 +15,7 @@ const NavbarItem: React.FC<NavbarItemProps> = ({ text, icon }) => {
   return (
     <Link href={navigateTo == "home" ? "/" : `/${navigateTo}`}>
       <a>
-        <div className="flex flex-col items-center mx-5">
+        <div className="flex flex-col flex-grow items-center">
           <div className="w-8 h-8 bg-slate-500 rounded-full"></div>
           <span>{displayText}</span>
         </div>
@@ -25,10 +25,10 @@ const NavbarItem: React.FC<NavbarItemProps> = ({ text, icon }) => {
 };
 
 const MobileNavbar: React.FC = () => {
-  const isAdmin = true;
+  const isAdmin = false;
   return (
     <div className="left-0 bottom-0 fixed w-screen bg-slate-200 p-2">
-      <div className="flex flex-row justify-center">
+      <div className="flex flex-row justify-around">
         <NavbarItem text="Home" icon={""} />
         <NavbarItem text="Menu" icon={""} />
         <NavbarItem text="Cart" icon={""} />
