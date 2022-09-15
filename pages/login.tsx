@@ -11,7 +11,7 @@ type LoginFormData = {
   remember: boolean;
 };
 
-const LoginPage: NextPage = (props) => {
+const LoginPage: NextPage = () => {
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",

@@ -34,7 +34,7 @@ const CartItem: React.FC = () => {
   );
 };
 
-const CartPage: NextPage = (props) => {
+const CartPage: NextPage = () => {
   return (
     <PageLayout>
       <Head>

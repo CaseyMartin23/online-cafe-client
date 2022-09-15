@@ -40,7 +40,7 @@ const ProfileItem: React.FC<ProfileItemType> = ({ label, href, icon }) => {
   );
 };
 
-const ProfilePage: NextPage = (props) => {
+const ProfilePage: NextPage = () => {
   const { push } = useRouter();
   const profileLinks: ProfileItemType[] = [
     {

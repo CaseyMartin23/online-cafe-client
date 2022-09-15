@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import PageLayout from "../comps/pageLayout";
 
-const RegisterPage: NextPage = (props) => {
+const RegisterPage: NextPage = () => {
   return (
     <PageLayout>
       <Head>

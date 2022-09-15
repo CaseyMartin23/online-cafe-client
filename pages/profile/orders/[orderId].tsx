@@ -97,7 +97,7 @@ const OrderSummary: React.FC = () => {
   );
 };
 
-const OrderDetails: NextPage = (props) => {
+const OrderDetails: NextPage = () => {
   return (
     <PageLayout>
       <Head>

@@ -14,7 +14,7 @@ import MealsTab from "../../comps/menu-tab-content/meals";
 import DrinksTab from "../../comps/menu-tab-content/drinks";
 import DessertsTab from "../../comps/menu-tab-content/desserts";
 
-const MenuPage: NextPage = (props) => {
+const MenuPage: NextPage = () => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState(0);
   const [searchInputValue, setSearchInputValue] = useState<string>("");

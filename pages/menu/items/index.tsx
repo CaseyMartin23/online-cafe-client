@@ -13,7 +13,7 @@ import ItemCard from "../../../comps/itemCard";
 import PaginationTabs from "../../../comps/paginationTabs";
 import { stringListToArray, notArrayAndTruthy } from "../../../utils";
 
-const MenuItems: NextPage = (props) => {
+const MenuItems: NextPage = () => {
   const query = useRouter().query;
   const { search, category, filters, sortBy, layout } = query;
   const [searchInputValue, setSearchInputValue] = useState<string>("");

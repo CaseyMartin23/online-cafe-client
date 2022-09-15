@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-const ItemNavbar: React.FC = (props) => {
+const ItemNavbar: React.FC = () => {
   return (
     <div className="flex flex-row ">
       <Link href="/menu/items">

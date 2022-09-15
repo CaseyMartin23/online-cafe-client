@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-const Navbar: React.FC = (props) => {
+const Navbar: React.FC = () => {
   return (
     <nav className="w-full py-2 px-4 bg-creamy-beige">
       <div className="flex flex-row">

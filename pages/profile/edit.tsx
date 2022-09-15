@@ -4,7 +4,7 @@ import Head from "next/head";
 
 import PageLayout from "../../comps/pageLayout";
 
-const EditProfilePage: NextPage = (props) => {
+const EditProfilePage: NextPage = () => {
   return (
     <PageLayout>
       <Head>

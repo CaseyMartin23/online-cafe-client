@@ -43,7 +43,7 @@ const PaypalItem: React.FC<PaypalItemProps> = ({ item, onRemove }) => {
   );
 };
 
-const PaypalPaymentMethod: NextPage = (props) => {
+const PaypalPaymentMethod: NextPage = () => {
   const [allPaypals, setAllPaypals] = useState<PaypalItemType[]>([
     {
       id: "TEST-PAYPAL-ID-01",

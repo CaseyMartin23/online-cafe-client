@@ -2,7 +2,7 @@ import React from "react";
 import TabContentItem from "./tabContentItem";
 import TabItemBg from "../../public/tab-content-background.jpg";
 
-const DessertsTab: React.FC = (props) => {
+const DessertsTab: React.FC = () => {
   return (
     <div>
       <TabContentItem

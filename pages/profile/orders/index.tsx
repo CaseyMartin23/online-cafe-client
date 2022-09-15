@@ -44,7 +44,7 @@ const OrderItem: React.FC<OrderItemType> = ({
   );
 };
 
-const Orders: NextPage = (props) => {
+const Orders: NextPage = () => {
   const [allOrders, setAllOrders] = useState<OrderItemType[]>([
     {
       id: "TEST-ORDER-ID-01",

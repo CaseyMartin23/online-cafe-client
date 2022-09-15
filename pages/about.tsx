@@ -3,7 +3,7 @@ import Head from "next/head";
 import React from "react";
 import PageLayout from "../comps/pageLayout";
 
-const AboutPage: NextPage = (props) => {
+const AboutPage: NextPage = () => {
   return (
     <PageLayout>
       <Head>

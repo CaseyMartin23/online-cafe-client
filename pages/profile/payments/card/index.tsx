@@ -42,7 +42,7 @@ export const CardItem: React.FC<CardItemProps> = ({ item, removeCard }) => {
   );
 };
 
-const CardPaymentMethod: NextPage = (props) => {
+const CardPaymentMethod: NextPage = () => {
   const [cardItems, setCardItems] = useState<DisplayCardItemType[]>([
     {
       id: "TEST-CARD-ID-01",
