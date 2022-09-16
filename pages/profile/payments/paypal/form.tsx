@@ -68,7 +68,7 @@ const PaypalForm: React.FC = () => {
               <label>Email</label>
               <input
                 className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
-                type="text"
+                type="email"
                 placeholder="Email"
                 data-field="email"
                 value={formData.email}

@@ -85,7 +85,7 @@ const CardItemEditForm: NextPage = () => {
               <label>Security Code</label>
               <input
                 className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
-                type="text"
+                type="password"
                 placeholder="Security Code"
                 data-field="securityCode"
                 value={formData.securityCode}

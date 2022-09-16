@@ -17,11 +17,14 @@ type AuthState = {
   loading: boolean;
 };
 
-type Action =
-  | { type: "LOGIN"; payload: User }
-  | { type: "POPULATE"; payload: User }
-  | { type: "LOGOUT" }
-  | { type: "STOP_LOADING" };
+type Action = { type: string; payload?: User };
+
+export enum ActionType {
+  Login = "LOGIN",
+  Populate = "POPULATE",
+  Logout = "LOGOUT",
+  StopLoading = "STOP_LOADING",
+}
 
 type Dispatch = React.Dispatch<Action>;
 
@@ -35,22 +38,22 @@ const DispatchContext = createContext((value: Action) => {});
 
 const reducer = (state: AuthState, action: Action) => {
   switch (action.type) {
-    case "LOGIN":
+    case ActionType.Login:
       return {
         ...state,
         authenticated: true,
         user: action.payload,
       };
 
-    case "LOGOUT":
-      localStorage.removeItem("token");
+    case ActionType.Logout:
+      localStorage.removeItem(storageItemName);
       return {
         ...state,
         authenticated: false,
         user: null,
       };
 
-    case "POPULATE":
+    case ActionType.Populate:
       return {
         ...state,
         user: {
@@ -59,7 +62,7 @@ const reducer = (state: AuthState, action: Action) => {
         },
       };
 
-    case "STOP_LOADING":
+    case ActionType.StopLoading:
       return {
         ...state,
         loading: false,
@@ -73,7 +76,7 @@ const reducer = (state: AuthState, action: Action) => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useReducer<React.Reducer<any, any>>(reducer, {
     user: null,
     authenticated: false,
     loading: true,

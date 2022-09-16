@@ -4,6 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 
 import {
+  ActionType,
   getStorageAuthContext,
   storageItemName,
   useAuthDispatch,
@@ -66,9 +67,7 @@ const LoginPage: NextPage = () => {
   const loadUser = async () => {
     const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/profile`;
     try {
-      const storeContext = getStorageAuthContext();
-      console.log("storeContext:", storeContext);
-      const { token } = storeContext;
+      const { token } = getStorageAuthContext();
       if (token === null || token === undefined) return;
 
       const res = await fetch(url, {
@@ -83,12 +82,12 @@ const LoginPage: NextPage = () => {
         throw new Error(user.message);
       }
 
-      dispatch({ type: "LOGIN", payload: user });
+      dispatch({ type: ActionType.Login, payload: user });
     } catch (err) {
       console.log(err);
       localStorage.removeItem(storageItemName);
     } finally {
-      dispatch({ type: "STOP_LOADING" });
+      dispatch({ type: ActionType.StopLoading });
     }
   };
 
@@ -125,7 +124,7 @@ const LoginPage: NextPage = () => {
               <div className="flex flex-col my-3">
                 <input
                   className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
-                  type="text"
+                  type="email"
                   placeholder="Email"
                   data-field="email"
                   value={formData.email}
@@ -136,7 +135,7 @@ const LoginPage: NextPage = () => {
               <div className="flex flex-col my-3">
                 <input
                   className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
-                  type="text"
+                  type="password"
                   placeholder="Password"
                   data-field="password"
                   value={formData.password}

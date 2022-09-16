@@ -51,7 +51,7 @@ const RegisterPage: NextPage = () => {
               <div className="flex flex-col my-3">
                 <input
                   className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
-                  type="text"
+                  type="email"
                   placeholder="Email"
                   data-field="email"
                   value={""}
@@ -62,7 +62,7 @@ const RegisterPage: NextPage = () => {
               <div className="flex flex-col my-3">
                 <input
                   className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
-                  type="text"
+                  type="password"
                   placeholder="Password"
                   data-field="password"
                   value={""}
@@ -73,7 +73,7 @@ const RegisterPage: NextPage = () => {
               <div className="flex flex-col my-3">
                 <input
                   className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
-                  type="text"
+                  type="password"
                   placeholder="Confirm Password"
                   data-field="confirm-password"
                   value={""}

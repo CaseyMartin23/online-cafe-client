@@ -5,6 +5,7 @@ import Head from "next/head";
 import PageLayout from "../../comps/pageLayout";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { ActionType, useAuthDispatch, useAuthState } from "../../authContext";
 
 type ProfileItemType = {
   label: string;
@@ -42,6 +43,8 @@ const ProfileItem: React.FC<ProfileItemType> = ({ label, href, icon }) => {
 
 const ProfilePage: NextPage = () => {
   const { push } = useRouter();
+  const { authenticated, user } = useAuthState();
+  const dispatch = useAuthDispatch();
   const profileLinks: ProfileItemType[] = [
     {
       label: "Orders",
@@ -71,7 +74,7 @@ const ProfilePage: NextPage = () => {
   ];
 
   const onLogout = () => {
-    console.log("Logout User!");
+    dispatch({ type: ActionType.Logout });
     push("/login");
   };
 
