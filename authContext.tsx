@@ -41,6 +41,7 @@ const reducer = (state: AuthState, action: Action) => {
         authenticated: true,
         user: action.payload,
       };
+
     case "LOGOUT":
       localStorage.removeItem("token");
       return {
@@ -48,6 +49,7 @@ const reducer = (state: AuthState, action: Action) => {
         authenticated: false,
         user: null,
       };
+
     case "POPULATE":
       return {
         ...state,
@@ -56,11 +58,13 @@ const reducer = (state: AuthState, action: Action) => {
           ...action.payload,
         },
       };
+
     case "STOP_LOADING":
       return {
         ...state,
         loading: false,
       };
+
     default:
       throw new Error("Unknown action type");
   }
@@ -76,14 +80,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   const loadUser = useCallback(async () => {
-    const userProfileUri = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/profile`;
-
+    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/profile`;
     try {
-      const token = localStorage.getItem("token");
-
+      const { token } = getStorageAuthContext();
       if (token === null || token === undefined) return;
 
-      const res = await fetch(userProfileUri, {
+      const res = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -98,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       dispatch({ type: "LOGIN", payload: user });
     } catch (err) {
       console.log(err);
-      localStorage.removeItem("token");
+      localStorage.removeItem(storageItemName);
     } finally {
       dispatch({ type: "STOP_LOADING" });
     }
@@ -120,3 +122,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAuthState = () => useContext(StateContext);
 export const useAuthDispatch: () => Dispatch = () =>
   useContext(DispatchContext);
+
+export const storageItemName = "online-cafe-context";
+
+export const getStorageAuthContext = () => {
+  const authContext = localStorage.getItem(storageItemName);
+
+  return authContext
+    ? JSON.parse(authContext)
+    : { token: null, remembered: false };
+};

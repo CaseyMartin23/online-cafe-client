@@ -1,9 +1,16 @@
 import React, { useState } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
-
-import PageLayout from "../comps/pageLayout";
 import Link from "next/link";
+
+import {
+  getStorageAuthContext,
+  storageItemName,
+  useAuthDispatch,
+  useAuthState,
+} from "../authContext";
+import PageLayout from "../comps/pageLayout";
+import Redirect from "../comps/redirect";
 
 type LoginFormData = {
   email: string;
@@ -12,6 +19,8 @@ type LoginFormData = {
 };
 
 const LoginPage: NextPage = () => {
+  const { authenticated } = useAuthState();
+  const dispatch = useAuthDispatch();
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -29,10 +38,71 @@ const LoginPage: NextPage = () => {
     }
   };
 
-  const submitFormData = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("Send formData:", formData);
+  const getUserAuthToken = async (email: string, password: string) => {
+    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/login`;
+    try {
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const authToken = await resp.json();
+
+      if (authToken.statusCode && authToken.message) {
+        throw new Error(authToken.message);
+      }
+      return authToken.token;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   };
+
+  const storgeAuthContext = (token: string, remembered: boolean) => {
+    const authContext = JSON.stringify({ token, remembered });
+    localStorage.setItem(storageItemName, authContext);
+  };
+
+  const loadUser = async () => {
+    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/profile`;
+    try {
+      const storeContext = getStorageAuthContext();
+      console.log("storeContext:", storeContext);
+      const { token } = storeContext;
+      if (token === null || token === undefined) return;
+
+      const res = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const user = await res.json();
+
+      if (user.statusCode && user.message) {
+        throw new Error(user.message);
+      }
+
+      dispatch({ type: "LOGIN", payload: user });
+    } catch (err) {
+      console.log(err);
+      localStorage.removeItem(storageItemName);
+    } finally {
+      dispatch({ type: "STOP_LOADING" });
+    }
+  };
+
+  const submitFormData = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const { email, password, remember } = formData;
+    const authToken = await getUserAuthToken(email, password);
+
+    storgeAuthContext(authToken, remember);
+    loadUser();
+  };
+
+  if (authenticated) return <Redirect url="/" />;
 
   return (
     <PageLayout>
