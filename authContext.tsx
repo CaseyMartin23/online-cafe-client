@@ -7,8 +7,10 @@ import React, {
 } from "react";
 
 type User = {
+  id: string;
   email: string;
-  name: string;
+  firstname: string;
+  lastname: string;
 };
 
 type AuthState = {
@@ -127,11 +129,7 @@ export const useAuthDispatch: () => Dispatch = () =>
   useContext(DispatchContext);
 
 export const storageItemName = "online-cafe-context";
-
 export const getStorageAuthContext = () => {
   const authContext = localStorage.getItem(storageItemName);
-
-  return authContext
-    ? JSON.parse(authContext)
-    : { token: null, remembered: false };
+  return authContext ? JSON.parse(authContext) : { token: null };
 };

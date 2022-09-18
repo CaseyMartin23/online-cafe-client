@@ -25,7 +25,7 @@ const LoginPage: NextPage = () => {
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
-    remember: false,
+    remember: true,
   });
 
   const onInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,21 +59,29 @@ const LoginPage: NextPage = () => {
     }
   };
 
-  const storgeAuthContext = (token: string, remembered: boolean) => {
-    const authContext = JSON.stringify({ token, remembered });
+  const storgeAuthContext = (token: string) => {
+    const authContext = JSON.stringify({ token });
     localStorage.setItem(storageItemName, authContext);
   };
 
-  const loadUser = async () => {
+  const loadUser = async (fetchedToken?: string) => {
     const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/profile`;
+    let authToken = fetchedToken;
+
     try {
-      const { token } = getStorageAuthContext();
-      if (token === null || token === undefined) return;
+      if (!authToken) {
+        const { token } = getStorageAuthContext();
+        authToken = token;
+      }
+
+      if (authToken === null || authToken === undefined) {
+        throw new Error("No Authentication Token Found!");
+      }
 
       const res = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${authToken}`,
         },
       });
       const user = await res.json();
@@ -97,8 +105,12 @@ const LoginPage: NextPage = () => {
     const { email, password, remember } = formData;
     const authToken = await getUserAuthToken(email, password);
 
-    storgeAuthContext(authToken, remember);
-    loadUser();
+    if (remember) {
+      storgeAuthContext(authToken);
+      loadUser();
+    } else {
+      loadUser(authToken);
+    }
   };
 
   if (authenticated) return <Redirect url="/" />;

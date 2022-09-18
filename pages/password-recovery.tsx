@@ -2,11 +2,11 @@ import Head from "next/head";
 import React from "react";
 import PageLayout from "../comps/pageLayout";
 
-const ForgotPasswordPage = () => {
+const PasswordRecoveryPage = () => {
   return (
     <PageLayout>
       <Head>
-        <title>Online Cafe | Forgot Password</title>
+        <title>Online Cafe | Password Recovery</title>
         <meta name="description" content="An online cafe store!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -18,4 +18,4 @@ const ForgotPasswordPage = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default PasswordRecoveryPage;

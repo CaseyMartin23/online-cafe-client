@@ -91,8 +91,10 @@ const ProfilePage: NextPage = () => {
           <div className="w-20 h-16 rounded-full mr-3 bg-amber-500"></div>
           <div className="flex flex-row w-full items-center">
             <div className="w-full py-1 px-2">
-              <h1>Profile Name</h1>
-              <span className="text-slate-400">profile email</span>
+              <h1>
+                {user && user.firstname} {user && user.lastname}
+              </h1>
+              <span className="text-slate-400">{user && user.email}</span>
             </div>
             <Link href="/profile/edit">
               <a>

@@ -4,6 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 
 import PageLayout from "../comps/pageLayout";
+import { useRouter } from "next/router";
 
 type formDataType = {
   firstname: string;
@@ -14,6 +15,7 @@ type formDataType = {
 };
 
 type formErrorsType = {
+  [key: string]: string;
   firstname: string;
   lastname: string;
   email: string;
@@ -21,7 +23,12 @@ type formErrorsType = {
   confirmPassword: string;
 };
 
+const FormErrorDisplay: React.FC<{ errorText: string }> = ({ errorText }) => {
+  return <span className="text-red-600 mt-2">{errorText}</span>;
+};
+
 const RegisterPage: NextPage = () => {
+  const { push } = useRouter();
   const [formData, setFormData] = useState<formDataType>({
     firstname: "",
     lastname: "",
@@ -72,8 +79,8 @@ const RegisterPage: NextPage = () => {
       );
 
     if (!isStrongPassword) {
-      const errorMessage = `Password is too weak.
-        Password must be at least 8 characters long, contain 1 uppercase letter, 1 lowercase letter, 1 digit and 1 special character.`;
+      const errorMessage =
+        "Password is too weak. Password must be at least 8 characters long, contain 1 uppercase letter, 1 lowercase letter, 1 digit and 1 special character.";
       setFormErrors({ ...formErrors, [`${field}`]: errorMessage });
     } else {
       setFormErrors({ ...formErrors, [`${field}`]: "" });
@@ -89,7 +96,7 @@ const RegisterPage: NextPage = () => {
     }
   };
 
-  const validateFormValue = (field: string, value: string) => {
+  const validateFormValues = (field: string, value: string) => {
     switch (field) {
       case "firstname":
         formNamesValidation(field, value);
@@ -116,13 +123,36 @@ const RegisterPage: NextPage = () => {
   const onInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     const { value, dataset } = target;
     const { field } = dataset;
-    validateFormValue(field ? field : "", value);
+    validateFormValues(field ? field : "", value);
     setFormData({ ...formData, [`${field}`]: value });
   };
 
-  const onSubmit = (event: React.FormEvent) => {
+  const checkIfFormHasErrors = () => {
+    const formKeys = Object.keys(formErrors);
+    return !formKeys.every((fieldKey) => formErrors[`${fieldKey}`].length < 1);
+  };
+
+  const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log("formData:", formData);
+    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/register`;
+    const { confirmPassword, ...submitableData } = formData;
+
+    try {
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submitableData),
+      });
+      const result = await resp.json();
+
+      if (result.statusCode && result.message) {
+        throw new Error(result.message);
+      }
+
+      push("/login");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -154,7 +184,7 @@ const RegisterPage: NextPage = () => {
                   value={formData.firstname}
                   onChange={onInputChange}
                 />
-                <span>{formErrors.firstname}</span>
+                <FormErrorDisplay errorText={formErrors.firstname} />
               </div>
 
               <div className="flex flex-col my-3">
@@ -166,7 +196,7 @@ const RegisterPage: NextPage = () => {
                   value={formData.lastname}
                   onChange={onInputChange}
                 />
-                <span>{formErrors.lastname}</span>
+                <FormErrorDisplay errorText={formErrors.lastname} />
               </div>
 
               <div className="flex flex-col my-3">
@@ -178,7 +208,7 @@ const RegisterPage: NextPage = () => {
                   value={formData.email}
                   onChange={onInputChange}
                 />
-                <span>{formErrors.email}</span>
+                <FormErrorDisplay errorText={formErrors.email} />
               </div>
 
               <div className="flex flex-col my-3">
@@ -190,7 +220,7 @@ const RegisterPage: NextPage = () => {
                   value={formData.password}
                   onChange={onInputChange}
                 />
-                <span>{formErrors.password}</span>
+                <FormErrorDisplay errorText={formErrors.password} />
               </div>
 
               <div className="flex flex-col my-3">
@@ -202,12 +232,15 @@ const RegisterPage: NextPage = () => {
                   value={formData.confirmPassword}
                   onChange={onInputChange}
                 />
-                <span>{formErrors.confirmPassword}</span>
+                <FormErrorDisplay errorText={formErrors.confirmPassword} />
               </div>
 
               <button
                 type="submit"
-                className="bg-accent-color text-white px-4 py-2 mt-5 rounded w-full"
+                disabled={checkIfFormHasErrors()}
+                className={`${
+                  checkIfFormHasErrors() ? "bg-blue-300" : "bg-accent-color"
+                } text-white px-4 py-2 mt-5 rounded w-full`}
               >
                 Sign up
               </button>
