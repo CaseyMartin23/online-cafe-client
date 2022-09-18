@@ -37,21 +37,78 @@ const RegisterPage: NextPage = () => {
     confirmPassword: "",
   });
 
+  const formNamesValidation = (field: string, value: string) => {
+    const displayFieldName = field === "firstname" ? "First name" : "Last name";
+    const lowercaseDisplayFieldName =
+      field === "firstname" ? "first name" : "last name";
+
+    if (value.length < 1) {
+      setFormErrors({
+        ...formErrors,
+        [`${field}`]: `${displayFieldName} can not be empty, please fill in ${lowercaseDisplayFieldName}`,
+      });
+    } else {
+      setFormErrors({ ...formErrors, [`${field}`]: "" });
+    }
+  };
+
+  const formEmailValidation = (field: string, value: string) => {
+    const isValidateEmail =
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value);
+    if (!isValidateEmail) {
+      setFormErrors({
+        ...formErrors,
+        [`${field}`]: "You have entered an invalid email address",
+      });
+    } else {
+      setFormErrors({ ...formErrors, [`${field}`]: "" });
+    }
+  };
+
+  const formPasswordValidation = (field: string, value: string) => {
+    const isStrongPassword =
+      /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})/.test(
+        value
+      );
+
+    if (!isStrongPassword) {
+      const errorMessage = `Password is too weak.
+        Password must be at least 8 characters long, contain 1 uppercase letter, 1 lowercase letter, 1 digit and 1 special character.`;
+      setFormErrors({ ...formErrors, [`${field}`]: errorMessage });
+    } else {
+      setFormErrors({ ...formErrors, [`${field}`]: "" });
+    }
+  };
+
+  const formConfirmPasswordValidation = (field: string, value: string) => {
+    const matchesPassword = value === formData.password;
+    if (!matchesPassword) {
+      setFormErrors({ ...formErrors, [`${field}`]: "Passwords do not match." });
+    } else {
+      setFormErrors({ ...formErrors, [`${field}`]: "" });
+    }
+  };
+
   const validateFormValue = (field: string, value: string) => {
     switch (field) {
       case "firstname":
+        formNamesValidation(field, value);
         break;
 
       case "lastname":
+        formNamesValidation(field, value);
         break;
 
       case "email":
+        formEmailValidation(field, value);
         break;
 
       case "password":
+        formPasswordValidation(field, value);
         break;
 
       case "confirmPassword":
+        formConfirmPasswordValidation(field, value);
         break;
     }
   };
@@ -131,7 +188,7 @@ const RegisterPage: NextPage = () => {
                   placeholder="Password"
                   data-field="password"
                   value={formData.password}
-                  onChange={() => {}}
+                  onChange={onInputChange}
                 />
                 <span>{formErrors.password}</span>
               </div>
@@ -141,11 +198,11 @@ const RegisterPage: NextPage = () => {
                   className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
                   type="password"
                   placeholder="Confirm Password"
-                  data-field="confirm-password"
-                  value={""}
-                  onChange={() => {}}
+                  data-field="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={onInputChange}
                 />
-                <span>{formErrors.firstname}</span>
+                <span>{formErrors.confirmPassword}</span>
               </div>
 
               <button
