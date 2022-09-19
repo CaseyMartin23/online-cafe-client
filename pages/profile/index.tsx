@@ -92,7 +92,7 @@ const ProfilePage: NextPage = () => {
           <div className="flex flex-row w-full items-center">
             <div className="w-full py-1 px-2">
               <h1>
-                {user && user.firstname} {user && user.lastname}
+                {user && user.firstName} {user && user.lastName}
               </h1>
               <span className="text-slate-400">{user && user.email}</span>
             </div>

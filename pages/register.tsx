@@ -7,8 +7,8 @@ import PageLayout from "../comps/pageLayout";
 import { useRouter } from "next/router";
 
 type formDataType = {
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -16,8 +16,8 @@ type formDataType = {
 
 type formErrorsType = {
   [key: string]: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -30,24 +30,24 @@ const FormErrorDisplay: React.FC<{ errorText: string }> = ({ errorText }) => {
 const RegisterPage: NextPage = () => {
   const { push } = useRouter();
   const [formData, setFormData] = useState<formDataType>({
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
   const [formErrors, setFormErrors] = useState<formErrorsType>({
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
   const formNamesValidation = (field: string, value: string) => {
-    const displayFieldName = field === "firstname" ? "First name" : "Last name";
+    const displayFieldName = field === "firstName" ? "First name" : "Last name";
     const lowercaseDisplayFieldName =
-      field === "firstname" ? "first name" : "last name";
+      field === "firstName" ? "first name" : "last name";
 
     if (value.length < 1) {
       setFormErrors({
@@ -98,11 +98,11 @@ const RegisterPage: NextPage = () => {
 
   const validateFormValues = (field: string, value: string) => {
     switch (field) {
-      case "firstname":
+      case "firstName":
         formNamesValidation(field, value);
         break;
 
-      case "lastname":
+      case "lastName":
         formNamesValidation(field, value);
         break;
 
@@ -180,11 +180,11 @@ const RegisterPage: NextPage = () => {
                   className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
                   type="text"
                   placeholder="First name"
-                  data-field="firstname"
-                  value={formData.firstname}
+                  data-field="firstName"
+                  value={formData.firstName}
                   onChange={onInputChange}
                 />
-                <FormErrorDisplay errorText={formErrors.firstname} />
+                <FormErrorDisplay errorText={formErrors.firstName} />
               </div>
 
               <div className="flex flex-col my-3">
@@ -192,11 +192,11 @@ const RegisterPage: NextPage = () => {
                   className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
                   type="text"
                   placeholder="Last name"
-                  data-field="lastname"
-                  value={formData.lastname}
+                  data-field="lastName"
+                  value={formData.lastName}
                   onChange={onInputChange}
                 />
-                <FormErrorDisplay errorText={formErrors.lastname} />
+                <FormErrorDisplay errorText={formErrors.lastName} />
               </div>
 
               <div className="flex flex-col my-3">

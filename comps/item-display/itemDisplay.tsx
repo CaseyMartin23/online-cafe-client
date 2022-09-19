@@ -37,7 +37,14 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item }) => {
       </div>
 
       <div className="mt-2">
-        <p>{details}</p>
+        <p>
+          {details}
+          <br />
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam sunt
+          dolor dolores ipsum itaque suscipit illo optio similique et quis
+          soluta minima perferendis quas accusantium, facilis necessitatibus
+          vero ex ut!
+        </p>
       </div>
     </div>
   );

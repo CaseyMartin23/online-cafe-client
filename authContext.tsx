@@ -9,8 +9,8 @@ import React, {
 type User = {
   id: string;
   email: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
 };
 
 type AuthState = {
