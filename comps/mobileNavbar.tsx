@@ -27,7 +27,7 @@ const NavbarItem: React.FC<NavbarItemProps> = ({ text, icon }) => {
 const MobileNavbar: React.FC = () => {
   const isAdmin = false;
   return (
-    <div className="left-0 bottom-0 fixed w-screen bg-slate-200 p-2">
+    <div className="left-0 bottom-0 fixed w-screen bg-slate-200 p-2 md:hidden">
       <div className="flex flex-row justify-around">
         <NavbarItem text="Home" icon={""} />
         <NavbarItem text="Menu" icon={""} />
