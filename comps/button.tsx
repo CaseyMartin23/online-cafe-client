@@ -18,7 +18,7 @@ const Button: React.FC<GenericButtonProps> = ({
     <button
       {...props}
       onClick={onClick}
-      className={`mx-1 px-2 py-1 rounded-md ${extendClassName}`}
+      className={`mx-1 px-2 py-2 rounded-md ${extendClassName}`}
     >
       {text}
     </button>

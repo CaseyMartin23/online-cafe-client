@@ -4,7 +4,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 
 import PageLayout from "../../comps/pageLayout";
-import SearchBar from "../../comps/search-bar/searchBar";
+import SearchBarWithFilters from "../../comps/search-bar/searchBarWithFilters";
 import {
   sortOptions,
   layoutOptions,
@@ -61,7 +61,7 @@ const MenuPage: NextPage = () => {
 
       <main>
         <div className="p-4 border-b-2 h-44 relative">
-          <SearchBar
+          <SearchBarWithFilters
             inputValue={searchInputValue}
             onInputChange={onSearchInputChange}
             onSearchSubmit={onSearchSubmit}

@@ -1,16 +1,29 @@
 import React, { useState } from "react";
 import Head from "next/head";
+
 import PageLayout from "../comps/pageLayout";
 import Sidebar from "../comps/AdminDashboard/sidebar";
-import ContentDisplay from "../comps/AdminDashboard/contentDisplay";
+import ContentDisplay from "../comps/AdminDashboard/content/contentDisplay";
 import MobileMenuBar from "../comps/AdminDashboard/mobileMenuBar";
 import MobileMenuModal from "../comps/AdminDashboard/mobileMenuModal";
 
+export enum AdminMenuItems {
+  Orders = "ORDERS",
+  Products = "PRODUCTS",
+}
+
 const AdminDashboard = () => {
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
+  const [selectedAdminMenuItem, setSelectedAdminMenuItem] =
+    useState<AdminMenuItems>(AdminMenuItems.Orders);
 
   const toggleMobileModal = () => {
     setIsMobileModalOpen(!isMobileModalOpen);
+  };
+
+  const onSelectedMenuItem = (newValue: AdminMenuItems) => {
+    setSelectedAdminMenuItem(newValue);
+    toggleMobileModal();
   };
 
   return (
@@ -21,11 +34,17 @@ const AdminDashboard = () => {
       </Head>
 
       <main className="flex flex-col flex-grow">
-        <MobileMenuBar onOpen={toggleMobileModal} />
+        <MobileMenuBar
+          onOpen={toggleMobileModal}
+          currentMenuItem={selectedAdminMenuItem}
+        />
         <div className="flex flex-row flex-grow">
-          <MobileMenuModal isOpen={isMobileModalOpen} />
+          <MobileMenuModal
+            onSelected={onSelectedMenuItem}
+            isOpen={isMobileModalOpen}
+          />
           <Sidebar />
-          <ContentDisplay />
+          <ContentDisplay currentMenuItem={selectedAdminMenuItem} />
         </div>
       </main>
     </PageLayout>
