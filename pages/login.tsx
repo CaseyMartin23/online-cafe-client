@@ -166,7 +166,7 @@ const LoginPage: NextPage = () => {
                   />
                   Remember Me
                 </label>
-                <Link href="/forgot-password">
+                <Link href="/password-recovery">
                   <a className="text-accent-color">Forgot Password?</a>
                 </Link>
               </div>

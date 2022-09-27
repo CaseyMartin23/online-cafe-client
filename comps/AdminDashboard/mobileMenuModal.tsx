@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "next/router";
 import { AdminMenuItems } from "../../pages/dashboard";
 
 type MobileMenuModalProps = {
@@ -32,17 +33,24 @@ const MobileMenuModal: React.FC<MobileMenuModalProps> = ({
   isOpen,
   onSelected,
 }) => {
+  const { push } = useRouter();
+
+  const onMenuItemClick = (itemType: AdminMenuItems) => {
+    onSelected(itemType);
+    push(`/dashboard?show=${itemType.toLocaleLowerCase()}&content=list`);
+  };
+
   return (
     <>
       {isOpen && (
         <div className="flex flex-col absolute w-full h-full p-4 bg-white">
           <MenuModalItem
-            clickHandler={() => onSelected(AdminMenuItems.Orders)}
+            clickHandler={() => onMenuItemClick(AdminMenuItems.Orders)}
             text="Orders"
             icon="[X]"
           />
           <MenuModalItem
-            clickHandler={() => onSelected(AdminMenuItems.Products)}
+            clickHandler={() => onMenuItemClick(AdminMenuItems.Products)}
             text="Products"
             icon="[X]"
           />

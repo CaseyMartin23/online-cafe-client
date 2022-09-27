@@ -19,8 +19,12 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({
   onProductSelect,
   toggleShowDetails,
 }) => {
+  const onAddProduct = () => {
+    toggleShowDetails();
+  };
+
   return (
-    <div>
+    <div className="flex flex-col h-full">
       <div className="p-2 bg-white">
         <SearchBar
           inputValue=""
@@ -34,7 +38,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({
         <Button
           text="Add Product"
           className="bg-accent-color text-white"
-          onClick={() => toggleShowDetails()}
+          onClick={onAddProduct}
         />
       </div>
       <div className="py-2 px-4">

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 
 import PageLayout from "../comps/pageLayout";
 import Sidebar from "../comps/AdminDashboard/sidebar";
@@ -13,6 +14,7 @@ export enum AdminMenuItems {
 }
 
 const AdminDashboard = () => {
+  const { query } = useRouter();
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
   const [selectedAdminMenuItem, setSelectedAdminMenuItem] =
     useState<AdminMenuItems>(AdminMenuItems.Orders);
@@ -25,6 +27,17 @@ const AdminDashboard = () => {
     setSelectedAdminMenuItem(newValue);
     toggleMobileModal();
   };
+
+  useEffect(() => {
+    const queryShow = query.show;
+    if (query && queryShow) {
+      if (queryShow === AdminMenuItems.Orders.toLocaleLowerCase()) {
+        setSelectedAdminMenuItem(AdminMenuItems.Orders);
+      } else {
+        setSelectedAdminMenuItem(AdminMenuItems.Products);
+      }
+    }
+  }, [query]);
 
   return (
     <PageLayout>
