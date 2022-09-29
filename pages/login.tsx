@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import {
 } from "../authContext";
 import PageLayout from "../comps/pageLayout";
 import Redirect from "../comps/redirect";
+import FormErrorDisplay from "../comps/formErrorDisplay";
 
 type LoginFormData = {
   email: string;
@@ -19,13 +20,22 @@ type LoginFormData = {
   remember: boolean;
 };
 
+type formErrorsType = {
+  [key: string]: string;
+  submissionError: string;
+};
+
 const LoginPage: NextPage = () => {
-  const { authenticated } = useAuthState();
+  const { authenticated, loading } = useAuthState();
   const dispatch = useAuthDispatch();
+  const [isLoading, setIsLoading] = useState(loading);
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
     remember: true,
+  });
+  const [formErrors, setFormErrors] = useState<formErrorsType>({
+    submissionError: "",
   });
 
   const onInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,8 +101,11 @@ const LoginPage: NextPage = () => {
       }
 
       dispatch({ type: ActionType.Login, payload: user });
-    } catch (err) {
-      console.log(err);
+    } catch (err: any) {
+      if (err.message === "No Authentication Token Found!") {
+        setFormErrors({ submissionError: "Incorrect email or password" });
+      }
+
       localStorage.removeItem(storageItemName);
     } finally {
       dispatch({ type: ActionType.StopLoading });
@@ -101,6 +114,7 @@ const LoginPage: NextPage = () => {
 
   const submitFormData = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true);
 
     const { email, password, remember } = formData;
     const authToken = await getUserAuthToken(email, password);
@@ -111,10 +125,13 @@ const LoginPage: NextPage = () => {
     } else {
       loadUser(authToken);
     }
+
+    setIsLoading(false);
   };
 
-  if (authenticated) return <Redirect url="/" />;
+  useEffect(() => console.log("isLoading:", isLoading), [isLoading]);
 
+  if (authenticated) return <Redirect url="/" />;
   return (
     <PageLayout>
       <Head>
@@ -154,6 +171,7 @@ const LoginPage: NextPage = () => {
                   onChange={onInputChange}
                 />
               </div>
+              <FormErrorDisplay errorText={formErrors.submissionError} />
 
               <div className="flex flex-row my-6">
                 <label className="mr-auto">
@@ -175,7 +193,7 @@ const LoginPage: NextPage = () => {
                 type="submit"
                 className="bg-accent-color text-white px-4 py-2 rounded w-full"
               >
-                Login
+                {isLoading ? "Loading..." : "Login"}
               </button>
 
               <div className="text-center mt-5">

@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import PageLayout from "../comps/pageLayout";
 import { useRouter } from "next/router";
+import FormErrorDisplay from "../comps/formErrorDisplay";
 
 type formDataType = {
   firstName: string;
@@ -21,10 +22,6 @@ type formErrorsType = {
   email: string;
   password: string;
   confirmPassword: string;
-};
-
-const FormErrorDisplay: React.FC<{ errorText: string }> = ({ errorText }) => {
-  return <span className="text-red-600 mt-2">{errorText}</span>;
 };
 
 const RegisterPage: NextPage = () => {

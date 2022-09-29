@@ -81,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [state, dispatch] = useReducer<React.Reducer<any, any>>(reducer, {
     user: null,
     authenticated: false,
-    loading: true,
+    loading: false,
   });
 
   const loadUser = useCallback(async () => {
@@ -102,12 +102,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error(user.message);
       }
 
-      dispatch({ type: "LOGIN", payload: user });
+      dispatch({ type: ActionType.Login, payload: user });
     } catch (err) {
       console.log(err);
       localStorage.removeItem(storageItemName);
     } finally {
-      dispatch({ type: "STOP_LOADING" });
+      dispatch({ type: ActionType.StopLoading });
     }
   }, []);
 

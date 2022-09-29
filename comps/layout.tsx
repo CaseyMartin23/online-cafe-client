@@ -1,9 +1,9 @@
 import React from "react";
+import { useRouter } from "next/router";
 
 import Navbar from "./navbar";
 import MobileNavbar from "./mobileNavbar";
 import Footer from "./footer";
-import { useRouter } from "next/router";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useRouter();
