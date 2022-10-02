@@ -30,7 +30,7 @@ a {
   max-height: 600px;
 }
 
-.order-item-image-container {
+.carousel-image-container {
   display: flex;
   flex-direction: row;
   margin-top: 8px;

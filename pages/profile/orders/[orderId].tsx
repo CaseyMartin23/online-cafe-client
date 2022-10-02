@@ -29,7 +29,7 @@ const OrderedItems: React.FC = () => {
     <div className="flex flex-col px-4 py-3 mb-2 bg-white">
       <div>STATUS DATE</div>
       <div>SIGNED BY</div>
-      <div className="order-item-image-container">
+      <div className="carousel-image-container">
         {["", "", "", "", "", ""].map((url, idx) => (
           <OrderItemImage key={`${url}-${idx}`} src={url} alt={url} />
         ))}

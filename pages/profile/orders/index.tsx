@@ -33,7 +33,7 @@ const OrderItem: React.FC<OrderItemType> = ({
           <div className="my-1">
             {status} {deliveredDate}
           </div>
-          <div className="order-item-image-container">
+          <div className="carousel-image-container">
             {images.map((url, idx) => (
               <OrderItemImage key={`${url}-${idx}`} src={url} alt={url} />
             ))}

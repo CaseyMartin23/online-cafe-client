@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import BackwardsNavbar from "../../../backwardsNavbar";
 import { AdminMenuItems } from "../../../../pages/dashboard";
+import Image from "next/image";
 
 type ProductDetailsProps = {
   selectedProduct: string | null;
@@ -9,18 +10,41 @@ type ProductDetailsProps = {
 };
 
 type ProductFormDataType = {
+  [index: string]: string | string[] | File[];
   name: string;
   description: string;
   price: string;
   categories: string[];
-  images: string[];
+  images: File[];
   tags: string[];
+};
+
+const ImageUploadPreview: React.FC<{ images: File[] }> = ({ images }) => {
+  return (
+    <div className="carousel-image-container">
+      {images.map((img, index) => {
+        const imgUrl = URL.createObjectURL(img);
+        return (
+          <div key={index} className="mx-2 min-w-fit">
+            <Image width={80} height={50} src={imgUrl} alt={img.name} />
+          </div>
+        );
+      })}
+      {images.length < 1 && (
+        <div className="flex flex-row items-center justify-center mx-2 h-14 w-full rounded bg-slate-200">
+          <span className="text-slate-500">No images selected</span>
+        </div>
+      )}
+    </div>
+  );
 };
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({
   selectedProduct,
   toggleShowDetails,
 }) => {
+  const [currentCategory, setCurrentCategory] = useState<string>();
+  const [currentTag, setTag] = useState<string>();
   const [formData, setFormData] = useState<ProductFormDataType>({
     name: "",
     description: "",
@@ -33,36 +57,35 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   const handleImageUpload = async (target: EventTarget & HTMLInputElement) => {
     const { files } = target;
     const uploadedImages = files ? files : [];
-    let fileFormData = new FormData();
+    const imageFiles: File[] = [];
 
     for (let i = 0; i < uploadedImages.length; i++) {
-      fileFormData.append("file", uploadedImages[i]);
+      imageFiles.push(uploadedImages[i]);
     }
 
-    const resp = await fetch(
-      `${process.env.NEXT_PUBLIC_API_DOMAIN}/admin/product/images`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer test`,
-        },
-        body: fileFormData,
-      }
-    );
-    const result = await resp.json();
+    setFormData({ ...formData, images: [...formData.images, ...imageFiles] });
+  };
 
-    console.log("result:", result);
+  const handleCategoriesAndTags = (field: string, value: string) => {
+    if (field === "categories") {
+      setCurrentCategory(value);
+    } else {
+      setTag(value);
+    }
   };
 
   const onInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     const { value, dataset } = target;
     const { field } = dataset;
 
-    if (field === "images") {
-      handleImageUpload(target);
-    } else {
-      console.log("input value:", value);
+    if (field) {
+      if (field === "images") {
+        handleImageUpload(target);
+      } else if (field === "categories" || field === "tags") {
+        setFormData({ ...formData, [field]: [...formData[field], value] });
+      } else {
+        setFormData({ ...formData, [field]: value });
+      }
     }
   };
 
@@ -71,12 +94,61 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
     toggleShowDetails();
   };
 
-  const onSubmit = () => {
-    // handle submit
+  const appendArrayValueToFormData = (
+    array: string[] | File[],
+    formDataLabel: string,
+    formData: FormData
+  ) => {
+    array.forEach((value) => {
+      formData.append(formDataLabel, value);
+    });
+  };
+
+  const parseSubmittedFormData = (submittedData: ProductFormDataType) => {
+    const formDataKeyArray = Object.keys(submittedData);
+    const parsedFormData = new FormData();
+
+    formDataKeyArray.forEach((key) => {
+      const itemValue = submittedData[key];
+      if (Array.isArray(itemValue)) {
+        switch (key) {
+          case "categories":
+            appendArrayValueToFormData(itemValue, "category", parsedFormData);
+            break;
+
+          case "images":
+            appendArrayValueToFormData(itemValue, "image", parsedFormData);
+            break;
+
+          case "tags":
+            appendArrayValueToFormData(itemValue, "tag", parsedFormData);
+            break;
+        }
+      } else {
+        parsedFormData.append(key, itemValue);
+      }
+    });
+
+    return parsedFormData;
+  };
+
+  const onSubmit = async () => {
+    const parsedFormData = parseSubmittedFormData(formData);
+
+    const resp = await fetch(`${process.env.NEXT_PUBLIC_API_DOMAIN}/products`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer test`,
+      },
+      body: parsedFormData,
+    });
+    const result = await resp.json();
+    console.log("result:", result);
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-screen">
       <div className="bg-white">
         <BackwardsNavbar
           onReturnClick={toggleShowDetails}
@@ -121,8 +193,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             />
           </div>
 
-          <div className="flex flex-col my-3">
+          <div className="flex flex-col w-full my-3">
             <label>Images</label>
+            <ImageUploadPreview images={formData.images} />
             <input
               className="p-2 mt-1 outline-none bg-slate-100 border-b-accent-color focus:border-b-2"
               type="file"
@@ -130,7 +203,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               data-field="images"
               accept="image/*"
               multiple
-              value={formData.images}
               onChange={onInputChange}
             />
           </div>
