@@ -125,8 +125,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 export const useAuthState = () => useContext(StateContext);
-export const useAuthDispatch: () => Dispatch = () =>
-  useContext(DispatchContext);
+export const useAuthDispatch: () => Dispatch = () => {
+  return useContext(DispatchContext);
+};
 
 export const storageItemName = "online-cafe-context";
 export const getStorageAuthContext = () => {
