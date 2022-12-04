@@ -150,7 +150,7 @@ const AddressDisplay: React.FC = () => {
     <div className="flex flex-col h-full w-full bg-slate-200">
       <div className="flex flex-row w-full px-2 pt-3">
         <Link href="/profile/addresses/form">
-          <a className="font-medium text-accent-color px-4 py-2">
+          <a className="font-medium text-accent-color cursor-pointer px-4 py-2">
             + Add Address
           </a>
         </Link>

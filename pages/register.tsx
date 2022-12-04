@@ -131,7 +131,7 @@ const RegisterPage: NextPage = () => {
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/register`;
+    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/register`;
     const { confirmPassword, ...submitableData } = formData;
 
     try {

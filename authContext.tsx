@@ -48,7 +48,7 @@ const reducer = (state: AuthState, action: Action) => {
       };
 
     case ActionType.Logout:
-      localStorage.removeItem(storageItemName);
+      localStorage.removeItem(StorageItemName);
       return {
         ...state,
         authenticated: false,
@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   const loadUser = useCallback(async () => {
-    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/profile`;
+    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/profile`;
     try {
       const { token } = getStorageAuthContext();
       if (token === null || token === undefined) return;
@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       dispatch({ type: ActionType.Login, payload: user });
     } catch (err) {
       console.log(err);
-      localStorage.removeItem(storageItemName);
+      localStorage.removeItem(StorageItemName);
     } finally {
       dispatch({ type: ActionType.StopLoading });
     }
@@ -129,8 +129,8 @@ export const useAuthDispatch: () => Dispatch = () => {
   return useContext(DispatchContext);
 };
 
-export const storageItemName = "online-cafe-context";
+export const StorageItemName = "online-cafe-context";
 export const getStorageAuthContext = () => {
-  const authContext = localStorage.getItem(storageItemName);
+  const authContext = localStorage.getItem(StorageItemName);
   return authContext ? JSON.parse(authContext) : { token: null };
 };

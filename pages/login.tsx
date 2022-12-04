@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -6,7 +6,7 @@ import Link from "next/link";
 import {
   ActionType,
   getStorageAuthContext,
-  storageItemName,
+  StorageItemName,
   useAuthDispatch,
   useAuthState,
 } from "../authContext";
@@ -49,40 +49,46 @@ const LoginPage: NextPage = () => {
     }
   };
 
-  const getUserAuthToken = async (email: string, password: string) => {
-    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/login`;
-    try {
-      const resp = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const authToken = await resp.json();
+  const toggleIsLoading = () => setIsLoading(!isLoading);
 
-      if (authToken.statusCode && authToken.message) {
-        throw new Error(authToken.message);
-      }
-      return authToken.token;
-    } catch (error) {
-      console.error(error);
-      return null;
+  const getUserAuthToken = async (email: string, password: string) => {
+    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/login`;
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const authTokenResponse = await resp.json();
+    console.log({ authTokenResponse });
+
+    if(authTokenResponse.statusCode && authTokenResponse.message) {
+      throw new Error(authTokenResponse.message);
     }
+
+    if (!authTokenResponse.success) {
+      const { message } = authTokenResponse.error;
+      throw new Error(message);
+    }
+
+    return authTokenResponse.data.tokens;
   };
 
-  const storgeAuthContext = (token: string) => {
-    const authContext = JSON.stringify({ token });
-    localStorage.setItem(storageItemName, authContext);
+  const storgeAuthContext = (context: { id: string, refreshToken: string }) => {
+    const authContext = JSON.stringify(context);
+    localStorage.setItem(StorageItemName, authContext);
   };
 
   const loadUser = async (fetchedToken?: string) => {
-    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}/auth/profile`;
-    let authToken = fetchedToken;
-
     try {
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/profile`;
+      let authToken = fetchedToken;
+
       if (!authToken) {
         const { token } = getStorageAuthContext();
         authToken = token;
       }
+
+      console.log({ authTokens: authToken })
 
       if (authToken === null || authToken === undefined) {
         throw new Error("No Authentication Token Found!");
@@ -94,42 +100,56 @@ const LoginPage: NextPage = () => {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      const user = await res.json();
+      const userProfileResponse = await res.json();
 
-      if (user.statusCode && user.message) {
-        throw new Error(user.message);
+      if (userProfileResponse.statusCode && userProfileResponse.message) {
+        throw new Error(userProfileResponse.message);
       }
 
+      if (!userProfileResponse.success) {
+        const { message } = userProfileResponse.error;
+        throw new Error(message);
+      }
+
+      const { user } = userProfileResponse.data;
       dispatch({ type: ActionType.Login, payload: user });
+      return user.id;
     } catch (err: any) {
+      console.error(err);
+
       if (err.message === "No Authentication Token Found!") {
         setFormErrors({ submissionError: "Incorrect email or password" });
       }
 
-      localStorage.removeItem(storageItemName);
+      localStorage.removeItem(StorageItemName);
     } finally {
       dispatch({ type: ActionType.StopLoading });
     }
   };
 
   const submitFormData = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsLoading(true);
+    try {
+      event.preventDefault();
+      setFormErrors({ submissionError: "" });
+      setIsLoading(true);
+      const { email, password, remember } = formData;
+      const authTokens = await getUserAuthToken(email, password);
+      const { accessToken, refreshToken } = authTokens;
 
-    const { email, password, remember } = formData;
-    const authToken = await getUserAuthToken(email, password);
-
-    if (remember) {
-      storgeAuthContext(authToken);
-      loadUser();
-    } else {
-      loadUser(authToken);
+      if (remember) {
+        const userId = await loadUser();
+        storgeAuthContext({ refreshToken, id: userId });
+      } else {
+        await loadUser(authTokens);
+      }
+    } catch (err: any) {
+      console.error(err);
+      if(err.message === "Unauthorized") setFormErrors({ submissionError: "Incorrect email or password" });
+      if(err.message === "User already logged in.") setFormErrors({ submissionError: err.message });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
-
-  useEffect(() => console.log("isLoading:", isLoading), [isLoading]);
 
   if (authenticated) return <Redirect url="/" />;
   return (
