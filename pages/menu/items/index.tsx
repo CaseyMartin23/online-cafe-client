@@ -12,9 +12,14 @@ import {
 import ItemCard from "../../../comps/itemCard";
 import PaginationTabs from "../../../comps/paginationTabs";
 import { stringListToArray, notArrayAndTruthy } from "../../../utils";
+import { useAuthState } from "../../../authContext";
+import { ProductType } from "./[id]";
 
 const MenuItems: NextPage = () => {
+  const { user, authenticated } = useAuthState();
   const query = useRouter().query;
+  const accessToken = user?.accessToken ? user?.accessToken : "";
+  const products = useRetrieveProducts(accessToken, 1);
   const { search, category, filters, sortBy, layout } = query;
   const [searchInputValue, setSearchInputValue] = useState<string>("");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
@@ -81,37 +86,21 @@ const MenuItems: NextPage = () => {
             updateSelectedLayoutOption={onLayoutChange}
           />
         </div>
-        <div className="flex flex-row flex-wrap p-4 pt-4">
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
-          <ItemCard
-            name="Item 1"
-            category="Cold Drink"
-            price="$25"
-            itemId="1"
-          />
+        <div className="flex flex-row flex-wrap p-4 pt-4 h-full">
+        {!authenticated && (
+          <div className="flex flex-row items-center justify-center w-full">
+            <div>Loading...</div>
+          </div>
+        )}
+          {authenticated && products && products.map(({ id, name, category, price }) => (
+            <ItemCard
+              key={`${id}-${name}`}
+              name={name}
+              category={category}
+              price={`$${price}`}
+              itemId={id}
+            />
+          ))}
         </div>
         <div>
           <PaginationTabs />
@@ -122,3 +111,40 @@ const MenuItems: NextPage = () => {
 };
 
 export default MenuItems;
+
+
+const useRetrieveProducts = (accessToken: string, pageNumber: number = 1) => {
+  const [products, setProducts] = useState<ProductType[]>([]);
+  
+  const getProducts = async () => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}products/page?index=${pageNumber}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      const productsResponse = await response.json();
+
+      if (productsResponse.statusCode && productsResponse.message) {
+        throw new Error(productsResponse.message);
+      }
+
+      if (!productsResponse.success) {
+        throw new Error(productsResponse.error.message);
+      }
+
+      setProducts(productsResponse.data.items);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  
+  useEffect(() => {
+    if(accessToken) getProducts();
+  }, [accessToken]);
+
+  return products;
+}

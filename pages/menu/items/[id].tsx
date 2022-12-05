@@ -10,57 +10,48 @@ import { notArrayAndTruthy } from "../../../utils";
 import ItemImageDisplay from "../../../comps/item-display/itemImageDisplay";
 import ItemCarousel from "../../../comps/itemCarousel";
 import ItemCard from "../../../comps/itemCard";
+import { useAuthState } from "../../../authContext";
 
-export type ItemType = {
+export type ProductType = {
   id: string;
   name: string;
-  details: string;
-  displayPrice: string;
-  rating: number;
-  category: string;
-  tags: string[];
+  description: string;
+  price: string;
   images: string[];
+  tags: string[];
+  category: string;
+  dateCreated: string;
+  dateUpdated: string;
 };
 
 const MenuItemPage: NextPage = () => {
-  const itemId = useRouter().query["item-id"];
-  const [item, setItem] = useState<ItemType>();
+  const { user, authenticated } = useAuthState()
+  const accessToken = user?.accessToken || "";
+  const product = useRetrieveProduct(accessToken);
   const [isLoading, setIsLoading] = useState(false);
-  const [similarItems, setSimilarItems] = useState<ItemType[]>();
-  const [alsoLikeditems, setAlsoLikedItems] = useState<ItemType[]>();
-
-  useEffect(() => {
-    // get full item by ID
-    setIsLoading(true);
-    setItem({
-      id: notArrayAndTruthy(itemId, ""),
-      name: "Cheese Burger",
-      details: "Burger description",
-      displayPrice: "3.00",
-      rating: 4.9,
-      category: "Burgers",
-      tags: ["Meals", "Burgers"],
-      images: [],
-    });
-    setIsLoading(false);
-  }, [itemId]);
+  const [similarItems, setSimilarItems] = useState<ProductType[]>();
+  const [alsoLikeditems, setAlsoLikedItems] = useState<ProductType[]>();
 
   return (
     <PageLayout>
       <Head>
-        <title>Online Cafe | {item?.name}</title>
+        <title>Online Cafe | {product?.name}</title>
         <meta name="description" content="An online cafe store!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        {isLoading && !item && <div>Loading...</div>}
-        {!isLoading && item && (
+      <main className="flex flex-col flex-grow">
+        <ItemNavbar />
+        {!authenticated && (
+          <div className="flex flex-row items-center justify-center h-full">
+            <div>Loading...</div>
+          </div>
+        )}
+        {authenticated && product && (
           <>
-            <ItemNavbar />
-            <ItemImageDisplay images={item.images} />
+            <ItemImageDisplay images={product?.images} />
             <div className="mx-4 mb-3">
-              <ItemDisplay item={item} />
+            <ItemDisplay item={product} />
               <div>
                 <div>
                   <h5>Similar Products</h5>
@@ -143,3 +134,43 @@ const MenuItemPage: NextPage = () => {
 };
 
 export default MenuItemPage;
+
+
+const useRetrieveProduct = (accessToken: string) => {
+  const id = useRouter().query.id;
+  const [product, setProduct] = useState<ProductType>();
+
+  const getProduct = async () => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}products/${id}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      const productsResponse = await response.json();
+
+      if (productsResponse.statusCode && productsResponse.message) {
+        throw new Error(productsResponse.message);
+      }
+
+      if (!productsResponse.success) {
+        throw new Error(productsResponse.error.message);
+      }
+
+      const [fetchedProduct] = productsResponse.data.items
+      console.log({ product: fetchedProduct })
+      setProduct(fetchedProduct);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    if (accessToken && id) getProduct();
+  }, [accessToken])
+
+  return product;
+}

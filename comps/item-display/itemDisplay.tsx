@@ -1,23 +1,55 @@
 import Link from "next/link";
 import React from "react";
+import { useAuthState } from "../../authContext";
 
-import { ItemType } from "../../pages/menu/items/[item-id]";
+import { ProductType } from "../../pages/menu/items/[id]";
 
 type ItemDisplayProps = {
-  item: ItemType;
+  item: ProductType;
 };
 
 const ItemDisplay: React.FC<ItemDisplayProps> = ({ item }) => {
-  const { id, name, displayPrice, details, tags } = item;
+  const { user } = useAuthState()
+  const { id, name, price, description, tags } = item;
+
+  const onAddToCart = async () => {
+    if(!user) return;
+    
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}cart`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.accessToken}`
+        },
+        body: JSON.stringify({ productId: id }),
+      });
+      const addToCartResponse = await response.json();
+
+      if (addToCartResponse.statusCode && addToCartResponse.message) {
+        throw new Error(addToCartResponse.message);
+      }
+
+      if (!addToCartResponse.success) {
+        throw new Error(addToCartResponse.error.message);
+      }
+
+      const successMessage = addToCartResponse.data.message;
+      console.log({ successMessage });
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <div className="flex flex-col mb-3">
       <div className="flex flex-row">
         <h1 className="text-lg font-medium mr-auto">{name}</h1>
-        <span className="text-lg font-bold">&#36; {displayPrice}</span>
+        <span className="text-lg font-bold">&#36; {price}</span>
       </div>
       <div>
-        {tags.map((tag, index, array) => {
+        {tags && tags.map((tag, index, array) => {
           const isLastTag = array.length - 1 === index;
           return (
             <span className="font-light" key={`${index}-${tag}`}>
@@ -29,16 +61,14 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item }) => {
       </div>
 
       <div className="flex justify-end">
-        <Link href="/cart">
-          <a className="px-3 py-2 text-white font-medium bg-accent-color rounded">
+          <button onClick={onAddToCart} className="px-3 py-2 text-white font-medium bg-accent-color rounded">
             Add to Cart
-          </a>
-        </Link>
+          </button>
       </div>
 
       <div className="mt-2">
         <p>
-          {details}
+          {description}
           <br />
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam sunt
           dolor dolores ipsum itaque suscipit illo optio similique et quis
