@@ -11,10 +11,10 @@ import ItemCard from "../comps/itemCard";
 
 import HeroImage from "../public/hero-background.jpg";
 
-const MenuItem: React.FC<{ text: string }> = ({ text }) => {
+const MenuItem: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="flex-grow bg-dark-brown text-white mx-3 p-3 rounded text-center">
-      {text}
+    <div className="flex-grow bg-dark-brown text-white mx-3 p-3 w-full rounded text-center">
+      {children}
     </div>
   );
 };
@@ -42,28 +42,28 @@ const Home: NextPage = () => {
           </div>
 
           <div id="menu" className="my-4">
-            <h4 className="text-lg font-medium">Menu</h4>
-            <div className="flex flex-row justify-center mt-2 mx-2">
-              <Link href="/menu?category=drinks">
-                <a>
-                  <MenuItem text="Drinks" />
-                </a>
-              </Link>
-              <Link href="/menu?category=meals">
-                <a>
-                  <MenuItem text="Meals" />
-                </a>
-              </Link>
-              <Link href="/menu?category=desserts">
-                <a>
-                  <MenuItem text="Desserts" />
-                </a>
-              </Link>
+            <h4 className="text-lg font-bold">Menu</h4>
+            <div className="flex flex-row mt-2">
+              <MenuItem>
+                <Link href="/menu?category=drinks">
+                  <a>Drinks</a>
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <Link href="/menu?category=meals">
+                  <a>Meals</a>
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <Link href="/menu?category=desserts">
+                  <a>Desserts</a>
+                </Link>
+              </MenuItem>
             </div>
           </div>
 
           <div id="top-selling" className="my-4">
-            <h4 className="text-lg font-medium">Top selling</h4>
+            <h4 className="text-lg font-bold">Top selling</h4>
             <ItemCarousel>
               <ItemCard
                 name="Item name 1"
@@ -99,7 +99,7 @@ const Home: NextPage = () => {
           </div>
 
           <div id="new-arrivals" className="my-4">
-            <h4 className="text-lg font-medium">New arrivals</h4>
+            <h4 className="text-lg font-bold">New arrivals</h4>
             <ItemCarousel>
               <ItemCard
                 name="Item name 1"

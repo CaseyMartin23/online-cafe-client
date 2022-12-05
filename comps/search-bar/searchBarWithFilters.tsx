@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import { useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
+import React, { useEffect, useState } from "react";
+import { notArrayAndTruthy, stringListToArray } from "../../utils";
 import SearchBar from "./searchBar";
 import SearchBarOption, {
+  layoutOptions,
   ModalDisplayOptions,
   SearchBarOptionsModal,
+  sortOptions,
 } from "./searchBarOptions";
 
 type SearchBarWithFiltersProps = {
@@ -19,18 +24,22 @@ type SearchBarWithFiltersProps = {
 
 const SearchBarWithFilters: React.FC<SearchBarWithFiltersProps> = ({
   inputValue,
-  selectedFilters,
-  selectedSortBy,
-  selectedLayout,
   onInputChange,
   onSearchSubmit,
   updateSelectedFilters,
   updateSelectedSortOption,
   updateSelectedLayoutOption,
 }) => {
+  const query = useRouter().query;
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [displayedOptions, setDisplayedOptions] =
     useState<ModalDisplayOptions | null>(null);
+  const {
+    searchInputValue,
+    selectedFilters,
+    sortSearch,
+    selectedLayout,
+  } = useSearchAndViewOptions(query);
 
   const onCloseModal = () => {
     console.log("Closed Modal");
@@ -47,6 +56,16 @@ const SearchBarWithFilters: React.FC<SearchBarWithFiltersProps> = ({
       setDisplayedOptions(modalOptionToDisplay);
     }
   };
+
+  useEffect(() => console.log([
+    "SearchBarWithFilters",
+    {
+      inputValue,
+      selectedFilters,
+      sortSearch,
+      selectedLayout
+    }
+  ]), [])
 
   return (
     <div className="flex flex-col">
@@ -76,7 +95,7 @@ const SearchBarWithFilters: React.FC<SearchBarWithFiltersProps> = ({
           optionsToDisplay={displayedOptions}
           filtersSelected={selectedFilters}
           updateSelectedFilters={updateSelectedFilters}
-          sortOptionSelected={selectedSortBy}
+          sortOptionSelected={sortSearch}
           updateSelectedSortOption={updateSelectedSortOption}
           layoutOptionSelected={selectedLayout}
           updateSelectedLayoutOption={updateSelectedLayoutOption}
@@ -87,3 +106,78 @@ const SearchBarWithFilters: React.FC<SearchBarWithFiltersProps> = ({
 };
 
 export default SearchBarWithFilters;
+
+const useSearchAndViewOptions = (query: ParsedUrlQuery) => {
+  const { search, category, filters, sortBy, layout } = query;
+  const [searchInputValue, setSearchInputValue] = useState<string>("");
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [sortSearch, setSortSearch] = useState<string>(sortOptions[0]);
+  const [selectedLayout, setSelectedLayout] = useState<string>(
+    layoutOptions[0]
+  );
+
+  const onFiltersUpdate = (newFilters: string[]) => {
+    setSelectedFilters(newFilters);
+  };
+
+  const onSortByChange = (newSortBy: string) => {
+    setSortSearch(newSortBy);
+  };
+
+  const onLayoutChange = (newLayout: string) => {
+    setSelectedLayout(newLayout);
+  };
+
+  const onSearchInputChange = ({
+    target,
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInputValue(target.value);
+  };
+
+  useEffect(() => {
+    if (search || category || filters || sortBy || layout) {
+      const querySearch = notArrayAndTruthy(search, searchInputValue);
+      const queryFilters = stringListToArray(filters);
+      const queryCategory = stringListToArray(category);
+      const querySortby = notArrayAndTruthy(sortBy, sortOptions[0]);
+      const queryLayout = notArrayAndTruthy(layout, layoutOptions[0]);
+
+      console.log([
+        "query values:",
+        {
+          search,
+          category,
+          filters,
+          sortBy,
+          layout
+        }
+      ]);
+      console.log([
+        "parsed query values:",
+        {
+          querySearch,
+          queryFilters,
+          queryCategory,
+          querySortby,
+          queryLayout
+        }
+      ])
+
+      setSearchInputValue(querySearch);
+      setSelectedFilters([...queryCategory, ...queryFilters]);
+      setSortSearch(querySortby);
+      setSelectedLayout(queryLayout);
+    }
+  }, [query]);
+
+  return {
+    searchInputValue,
+    selectedFilters,
+    sortSearch,
+    selectedLayout,
+    // onFiltersUpdate,
+    // onSortByChange,
+    // onLayoutChange,
+    // onSearchInputChange
+  };
+}

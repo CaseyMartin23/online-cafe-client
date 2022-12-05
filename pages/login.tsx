@@ -49,8 +49,6 @@ const LoginPage: NextPage = () => {
     }
   };
 
-  const toggleIsLoading = () => setIsLoading(!isLoading);
-
   const getUserAuthToken = async (email: string, password: string) => {
     const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/login`;
     const resp = await fetch(url, {
@@ -59,7 +57,6 @@ const LoginPage: NextPage = () => {
       body: JSON.stringify({ email, password }),
     });
     const authTokenResponse = await resp.json();
-    console.log({ authTokenResponse });
 
     if(authTokenResponse.statusCode && authTokenResponse.message) {
       throw new Error(authTokenResponse.message);
@@ -78,26 +75,17 @@ const LoginPage: NextPage = () => {
     localStorage.setItem(StorageItemName, authContext);
   };
 
-  const loadUser = async (fetchedToken?: string) => {
+  const loadUser = async (accessToken: string) => {
     try {
-      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/profile`;
-      let authToken = fetchedToken;
-
-      if (!authToken) {
-        const { token } = getStorageAuthContext();
-        authToken = token;
-      }
-
-      console.log({ authTokens: authToken })
-
-      if (authToken === null || authToken === undefined) {
+      if (accessToken === null || accessToken === undefined) {
         throw new Error("No Authentication Token Found!");
       }
-
+      
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/profile`;
       const res = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
       const userProfileResponse = await res.json();
@@ -111,8 +99,8 @@ const LoginPage: NextPage = () => {
         throw new Error(message);
       }
 
-      const { user } = userProfileResponse.data;
-      dispatch({ type: ActionType.Login, payload: user });
+      const user = userProfileResponse.data.user;
+      dispatch({ type: ActionType.Login, payload: { ...user, accessToken } });
       return user.id;
     } catch (err: any) {
       console.error(err);
@@ -133,14 +121,13 @@ const LoginPage: NextPage = () => {
       setFormErrors({ submissionError: "" });
       setIsLoading(true);
       const { email, password, remember } = formData;
-      const authTokens = await getUserAuthToken(email, password);
-      const { accessToken, refreshToken } = authTokens;
+      const { accessToken, refreshToken } = await getUserAuthToken(email, password);
 
       if (remember) {
-        const userId = await loadUser();
+        const userId = await loadUser(accessToken);
         storgeAuthContext({ refreshToken, id: userId });
       } else {
-        await loadUser(authTokens);
+        await loadUser(accessToken);
       }
     } catch (err: any) {
       console.error(err);

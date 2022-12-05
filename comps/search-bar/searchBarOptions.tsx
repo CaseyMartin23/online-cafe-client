@@ -89,7 +89,7 @@ const ModalFilterOption: React.FC<ModalOptionProps> = ({
 }) => {
   const selectionIcon = isSelected ? "[ X ] " : "[  ] ";
   const seletedOptionClasses = isSelected ? "bg-blue-600" : "bg-blue-400";
-  const modalFilterOptionClasses = `p-2 m-1 ${seletedOptionClasses} text-white rounded`;
+  const modalFilterOptionClasses = `p-2 m-1 ${seletedOptionClasses} text-white rounded cursor-pointer`;
 
   return (
     <div className={modalFilterOptionClasses} onClick={onSelect}>

@@ -73,7 +73,36 @@ const ProfilePage: NextPage = () => {
     },
   ];
 
-  const onLogout = () => {
+  const requestLogout = async () => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/logout`
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.accessToken}`,
+        }
+      });
+      const logoutResponse = await response.json();
+
+      if(logoutResponse.statusCode && logoutResponse.message) {
+        throw new Error(logoutResponse.message);
+      }
+
+      if(!logoutResponse.success) {
+        const message = logoutResponse.error.message;
+        throw new Error(message);
+      }
+
+      const successMessage = logoutResponse.data.message;
+      console.log(successMessage);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const onLogout = async () => {
+    await requestLogout();
     dispatch({ type: ActionType.Logout });
     push("/login");
   };
@@ -118,7 +147,7 @@ const ProfilePage: NextPage = () => {
 
           <div
             onClick={onLogout}
-            className="flex flex-row h-16 mt-7 text-red-600 font-semibold"
+            className="flex flex-row h-16 mt-7 text-red-600 font-semibold cursor-pointer"
           >
             <div className="flex items-center p-2">[X]</div>
             <div className="flex flex-grow items-center p-2">Logout</div>

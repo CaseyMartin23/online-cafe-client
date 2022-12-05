@@ -11,6 +11,7 @@ type User = {
   email: string;
   firstName: string;
   lastName: string;
+  accessToken: string;
 };
 
 type AuthState = {
@@ -84,25 +85,69 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     loading: false,
   });
 
-  const loadUser = useCallback(async () => {
-    const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/profile`;
+  const getNewAuthTokens = async () => {
     try {
-      const { token } = getStorageAuthContext();
-      if (token === null || token === undefined) return;
+      const { refreshToken: token, id } = getStorageAuthContext();
+      if(!token && !id) return;
 
-      const res = await fetch(url, {
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/refresh/${id}`;
+      const response = await fetch(url, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        },
+        }
       });
-      const user = await res.json();
+      const authTokensResponse = await response.json();
 
-      if (user.statusCode && user.message) {
-        throw new Error(user.message);
+      if(authTokensResponse.statusCode && authTokensResponse.message) {
+        throw new Error(authTokensResponse.message);
       }
 
-      dispatch({ type: ActionType.Login, payload: user });
+      if(!authTokensResponse.success) {
+        const message = authTokensResponse.error.message;
+        throw new Error(message);
+      }
+
+      const { accessToken, refreshToken } = authTokensResponse.data.tokens;
+      localStorage.removeItem(StorageItemName);
+      localStorage.setItem(StorageItemName, JSON.stringify({ refreshToken, id }));
+      return accessToken;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const loadUser = useCallback(async () => {
+    try {
+      let accessToken = state.user ? state.user.accessToken : null;
+      if (!accessToken) {
+        const token = await getNewAuthTokens();
+        if(!token) return;
+
+        accessToken = token;
+      };
+      
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/profile`;
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const userResponse = await response.json();
+
+      if (userResponse.statusCode && userResponse.message) {
+        throw new Error(userResponse.message);
+      }
+
+      if (!userResponse.success) {
+        const message = userResponse.error.message
+        throw new Error(message);
+      }
+
+      const user = userResponse.data.user;
+      dispatch({ type: ActionType.Login, payload: { ...user, accessToken } });
     } catch (err) {
       console.log(err);
       localStorage.removeItem(StorageItemName);
@@ -130,7 +175,8 @@ export const useAuthDispatch: () => Dispatch = () => {
 };
 
 export const StorageItemName = "online-cafe-context";
-export const getStorageAuthContext = () => {
+export const getStorageAuthContext = (): { refreshToken: string; id: string } => {
   const authContext = localStorage.getItem(StorageItemName);
-  return authContext ? JSON.parse(authContext) : { token: null };
+  const noAuthContextFound = { refreshToken: null, id: null };
+  return authContext ? JSON.parse(authContext) : noAuthContextFound;
 };
