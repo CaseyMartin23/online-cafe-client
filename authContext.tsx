@@ -93,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error(error);
       return;
     }
-    console.log(data.message);
+    console.log({ message: data.message });
   }
 
   const getNewAuthTokens = async () => {
@@ -101,7 +101,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const { refreshToken: token, id } = getStorageAuthContext();
       if(!token || !id) return;
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/refresh/${id}`;
-      console.log({ id, token })
       const { data, error } = await handleFetchRequest(url, {
         headers: { Authorization: `Bearer ${token}` },
       });

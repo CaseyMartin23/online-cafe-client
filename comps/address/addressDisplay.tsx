@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { AddressType } from "../../pages/profile/addresses";
+import { useAddress } from "../../hooks/useAddress";
 
 type AddressItemProps = {
   address: AddressType;
-  removeAddress: (id: string) => void;
-  selectAddress: (id: string) => void;
+  removeAddress: () => void;
+  selectAddress: () => void;
 };
+
+const AddressItemDisplay: React.FC<{ text?: string }> = ({ text }) => {
+  return text ? <div>{text}</div> : <></>;
+}
 
 const AddressItem: React.FC<AddressItemProps> = ({
   address,
@@ -26,13 +31,10 @@ const AddressItem: React.FC<AddressItemProps> = ({
     phoneNumber,
     isSelected,
   } = address;
+  const containerStyle = `flex flex-col p-3 my-2 bg-white rounded ${isSelected && "border border-accent-color"}`;
 
   return (
-    <div
-      className={`flex flex-col p-3 my-2 bg-white rounded ${
-        isSelected && "border border-accent-color"
-      }`}
-    >
+    <div className={containerStyle}>
       <div className="px-2">
         <div className="flex flex-row mb-2">
           <span className="mr-auto">
@@ -41,25 +43,18 @@ const AddressItem: React.FC<AddressItemProps> = ({
           <div>{isSelected ? "[X]" : "[ ]"}</div>
         </div>
         <div className="mb-2">
-          <p>
-            {streetAddress}
-            <br />
-            {aptAddress}
-            <br />
-            {city}
-            <br />
-            {state}
-            <br />
-            {country}
-            <br />
-            {zip}
-          </p>
+          <AddressItemDisplay text={streetAddress} />
+          <AddressItemDisplay text={aptAddress} />
+          <AddressItemDisplay text={city} />
+          <AddressItemDisplay text={state} />
+          <AddressItemDisplay text={country} />
+          <AddressItemDisplay text={zip} />
         </div>
         <div>{phoneNumber}</div>
       </div>
       <div className="flex flex-row mt-3 justify-end">
         <button
-          onClick={() => removeAddress(id)}
+          onClick={removeAddress}
           className="rounded w-full p-2 border border-red-600 text-red-600 mr-2 h-12"
         >
           Remove
@@ -71,10 +66,9 @@ const AddressItem: React.FC<AddressItemProps> = ({
         </Link>
         <button
           disabled={isSelected}
-          onClick={() => selectAddress(id)}
-          className={`rounded w-full p-2 ${
-            isSelected ? "bg-blue-400" : "bg-accent-color"
-          } text-white h-12`}
+          onClick={selectAddress}
+          className={`rounded w-full p-2 ${isSelected ? "bg-blue-400" : "bg-accent-color"
+            } text-white h-12`}
         >
           Deliver Here
         </button>
@@ -84,67 +78,12 @@ const AddressItem: React.FC<AddressItemProps> = ({
 };
 
 const AddressDisplay: React.FC = () => {
-  const [allAddresses, setAllAddresses] = useState<AddressType[]>([
-    {
-      id: "ID-TEST-01",
-      firstName: "FIRSTNAME-01",
-      lastName: "LASTNAME-01",
-      streetAddress: "0001-TEST-STREET-01",
-      aptAddress: "TEST-APT-01",
-      city: "TEST-CITY-01",
-      state: "TEST-STATE-01",
-      country: "TEST-COUNTRY-01",
-      zip: "TEST-ZIP-01",
-      phoneNumber: "TEST-PHONENUMBER-01",
-      isSelected: true,
-    },
-    {
-      id: "ID-TEST-02",
-      firstName: "FIRSTNAME-02",
-      lastName: "LASTNAME-02",
-      streetAddress: "0002-TEST-STREET-02",
-      aptAddress: "TEST-APT-02",
-      city: "TEST-CITY-02",
-      state: "TEST-STATE-02",
-      country: "TEST-COUNTRY-02",
-      zip: "TEST-ZIP-02",
-      phoneNumber: "TEST-PHONENUMBER-02",
-      isSelected: false,
-    },
-    {
-      id: "ID-TEST-03",
-      firstName: "FIRSTNAME-03",
-      lastName: "LASTNAME-03",
-      streetAddress: "0003-TEST-STREET-03",
-      aptAddress: "TEST-APT-03",
-      city: "TEST-CITY-03",
-      state: "TEST-STATE-03",
-      country: "TEST-COUNTRY-03",
-      zip: "TEST-ZIP-03",
-      phoneNumber: "TEST-PHONENUMBER-03",
-      isSelected: false,
-    },
-  ]);
-
-  const removeAddress = (addressId: string) => {
-    const addresses = [...allAddresses];
-    const newAddresses = addresses.filter(({ id }) => id !== addressId);
-    selectAddress(newAddresses[0].id);
-    setAllAddresses(newAddresses);
-  };
-
-  const selectAddress = (addressId: string) => {
-    const addresses = [...allAddresses];
-    const [newSelectedAddress] = addresses.filter(({ id }) => id === addressId);
-    const [currentSelectedAddress] = addresses.filter(
-      ({ isSelected }) => isSelected
-    );
-
-    if (currentSelectedAddress) currentSelectedAddress.isSelected = false;
-    if (newSelectedAddress) newSelectedAddress.isSelected = true;
-
-    setAllAddresses([...addresses]);
-  };
+  const {
+    addresses,
+    isLoading,
+    selectDefaultAddress,
+    removeAddress,
+  } = useAddress();
 
   return (
     <div className="flex flex-col h-full w-full bg-slate-200">
@@ -157,12 +96,13 @@ const AddressDisplay: React.FC = () => {
       </div>
 
       <div className="flex flex-col flex-grow address-item-container overflow-x-auto px-3 py-1 mt-1 mb-5">
-        {allAddresses.map((address, index) => (
+        {isLoading && !addresses && <div>Loading...</div>}
+        {!isLoading && addresses.map((address, index) => (
           <AddressItem
             key={`${address.id}-${index}`}
             address={address}
-            removeAddress={removeAddress}
-            selectAddress={selectAddress}
+            removeAddress={() => removeAddress(address.id)}
+            selectAddress={() => selectDefaultAddress(address.id)}
           />
         ))}
       </div>

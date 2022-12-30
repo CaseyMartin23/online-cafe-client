@@ -10,7 +10,7 @@ export type AddressType = {
   firstName: string;
   lastName: string;
   streetAddress: string;
-  aptAddress: string;
+  aptAddress?: string;
   city: string;
   state: string;
   country: string;

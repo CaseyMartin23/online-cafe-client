@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuthState } from "../authContext";
-import { handleFetchRequest } from "../utils";
+import { AddressType } from "../pages/profile/addresses";
+import { handleFetchRequest, isObjectsDeepEqual } from "../utils";
 
 type CreateAddressType = {
   firstName: string;
@@ -16,7 +17,7 @@ type CreateAddressType = {
 
 export const useAddress = () => {
   const { user } = useAuthState()
-  const [addresses, setAddresses] = useState([]);
+  const [addresses, setAddresses] = useState<AddressType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const requestOptions = { headers: { Authorization: `Bearer ${user?.accessToken}` } };
 
@@ -25,7 +26,7 @@ export const useAddress = () => {
       setIsLoading(true);
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
       const { data, error } = await handleFetchRequest(url, { ...requestOptions, method: "POST" }, address);
-      if(error) throw new Error(error.message);
+      if (error) throw new Error(error.message);
       console.log({ data });
     } catch (err) {
       console.error(err);
@@ -34,12 +35,12 @@ export const useAddress = () => {
     }
   }
 
-  const selectDefaultAddress = async () => {
+  const selectDefaultAddress = async (id: string) => {
     try {
       setIsLoading(true);
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
       const { data, error } = await handleFetchRequest(url, requestOptions);
-      if(error) throw new Error(error.message);
+      if (error) throw new Error(error.message);
       console.log({ data });
     } catch (err) {
       console.error(err);
@@ -48,12 +49,12 @@ export const useAddress = () => {
     }
   }
 
-  const updateAddress = async () => {
+  const updateAddress = async (id: string) => {
     try {
       setIsLoading(true);
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
       const { data, error } = await handleFetchRequest(url, requestOptions);
-      if(error) throw new Error(error.message);
+      if (error) throw new Error(error.message);
       console.log({ data });
     } catch (err) {
       console.error(err);
@@ -62,12 +63,12 @@ export const useAddress = () => {
     }
   }
 
-  const deleteAddress = async () => {
+  const removeAddress = async (id: string) => {
     try {
       setIsLoading(true);
-      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
-      const { data, error } = await handleFetchRequest(url, requestOptions);
-      if(error) throw new Error(error.message);
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses/${id}`;
+      const { data, error } = await handleFetchRequest(url, { ...requestOptions, method: "DELETE" });
+      if (error) throw new Error(error.message);
       console.log({ data });
     } catch (err) {
       console.error(err);
@@ -76,12 +77,12 @@ export const useAddress = () => {
     }
   }
 
-  const getAddress = async () => {
+  const getAddress = async (id: string) => {
     try {
       setIsLoading(true);
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
       const { data, error } = await handleFetchRequest(url, requestOptions);
-      if(error) throw new Error(error.message);
+      if (error) throw new Error(error.message);
       console.log({ data });
     } catch (err) {
       console.error(err);
@@ -93,10 +94,12 @@ export const useAddress = () => {
   const getAddresses = async () => {
     try {
       setIsLoading(true);
+      if (!user) return;
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
       const { data, error } = await handleFetchRequest(url, requestOptions);
-      if(error) throw new Error(error.message);
-      console.log({ data });
+      if (error) throw new Error(error.message);
+      const newAddresses = data.items;
+      if (!isObjectsDeepEqual(addresses || {}, newAddresses)) setAddresses(newAddresses);
     } catch (err) {
       console.error(err);
     } finally {
@@ -104,14 +107,18 @@ export const useAddress = () => {
     }
   }
 
+  useEffect(() => {
+    getAddresses();
+  }, [addresses, user])
+
   return {
     addresses,
     isLoading,
     createAddress,
     selectDefaultAddress,
     updateAddress,
-    deleteAddress,
+    removeAddress,
     getAddress,
-    getAddresses, 
+    getAddresses,
   }
 }
