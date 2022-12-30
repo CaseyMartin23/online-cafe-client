@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 import PageLayout from "../../../comps/pageLayout";
 import ItemNavbar from "../../../comps/item-display/itemNavbar";
 import ItemDisplay from "../../../comps/item-display/itemDisplay";
-import { notArrayAndTruthy } from "../../../utils";
 import ItemImageDisplay from "../../../comps/item-display/itemImageDisplay";
 import ItemCarousel from "../../../comps/itemCarousel";
 import ItemCard from "../../../comps/itemCard";

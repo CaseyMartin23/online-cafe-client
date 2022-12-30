@@ -5,7 +5,6 @@ import Link from "next/link";
 
 import {
   ActionType,
-  getStorageAuthContext,
   StorageItemName,
   useAuthDispatch,
   useAuthState,
@@ -13,6 +12,7 @@ import {
 import PageLayout from "../comps/pageLayout";
 import Redirect from "../comps/redirect";
 import FormErrorDisplay from "../comps/formErrorDisplay";
+import { handleFetchRequest } from "../utils";
 
 type LoginFormData = {
   email: string;
@@ -29,13 +29,11 @@ const LoginPage: NextPage = () => {
   const { authenticated, loading } = useAuthState();
   const dispatch = useAuthDispatch();
   const [isLoading, setIsLoading] = useState(loading);
+  const [formErrors, setFormErrors] = useState<formErrorsType>({ submissionError: "" });
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
     remember: true,
-  });
-  const [formErrors, setFormErrors] = useState<formErrorsType>({
-    submissionError: "",
   });
 
   const onInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,25 +47,11 @@ const LoginPage: NextPage = () => {
     }
   };
 
-  const getUserAuthToken = async (email: string, password: string) => {
+  const getUserAuthToken = async (email: string, password: string): Promise<{ accessToken: string; refreshToken: string; }> => {
     const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/login`;
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    const authTokenResponse = await resp.json();
-
-    if(authTokenResponse.statusCode && authTokenResponse.message) {
-      throw new Error(authTokenResponse.message);
-    }
-
-    if (!authTokenResponse.success) {
-      const { message } = authTokenResponse.error;
-      throw new Error(message);
-    }
-
-    return authTokenResponse.data.tokens;
+    const { data, error } = await handleFetchRequest(url, { method: "POST" }, { email, password });
+    if(error) throw new Error(error.message);
+    return data.tokens;
   };
 
   const storgeAuthContext = (context: { id: string, refreshToken: string }) => {
@@ -76,35 +60,19 @@ const LoginPage: NextPage = () => {
   };
 
   const loadUser = async (accessToken: string) => {
+    let userId = "";
     try {
       if (accessToken === null || accessToken === undefined) {
         throw new Error("No Authentication Token Found!");
       }
-      
+
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/profile`;
-      const res = await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const userProfileResponse = await res.json();
-
-      if (userProfileResponse.statusCode && userProfileResponse.message) {
-        throw new Error(userProfileResponse.message);
-      }
-
-      if (!userProfileResponse.success) {
-        const { message } = userProfileResponse.error;
-        throw new Error(message);
-      }
-
-      const user = userProfileResponse.data.user;
+      const { data, error } = await handleFetchRequest(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+      if(error) throw new Error(error.message);
+      const user = data.user;
+      userId = user.id;
       dispatch({ type: ActionType.Login, payload: { ...user, accessToken } });
-      return user.id;
     } catch (err: any) {
-      console.error(err);
-
       if (err.message === "No Authentication Token Found!") {
         setFormErrors({ submissionError: "Incorrect email or password" });
       }
@@ -113,6 +81,7 @@ const LoginPage: NextPage = () => {
     } finally {
       dispatch({ type: ActionType.StopLoading });
     }
+    return userId;
   };
 
   const submitFormData = async (event: React.FormEvent<HTMLFormElement>) => {

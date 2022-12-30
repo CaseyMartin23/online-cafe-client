@@ -1,10 +1,10 @@
 import React, {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useReducer,
 } from "react";
+import { handleFetchRequest } from "./utils";
 
 type User = {
   id: string;
@@ -36,7 +36,6 @@ const StateContext = createContext<AuthState>({
   user: null,
   loading: true,
 });
-
 const DispatchContext = createContext((value: Action) => {});
 
 const reducer = (state: AuthState, action: Action) => {
@@ -84,32 +83,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     authenticated: false,
     loading: false,
   });
+  const stateUser = state.user;
+
+  const logoutUser = async() => {
+    const { data, error } = await handleFetchRequest(`${process.env.NEXT_PUBLIC_API_DOMAIN}auth/logout`, {
+      headers: { Authorization: `Bearer ${state.user?.accessToken}` },
+    })
+    if(error) {
+      console.error(error);
+      return;
+    }
+    console.log(data.message);
+  }
 
   const getNewAuthTokens = async () => {
     try {
       const { refreshToken: token, id } = getStorageAuthContext();
-      if(!token && !id) return;
-
+      if(!token || !id) return;
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/refresh/${id}`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        }
+      console.log({ id, token })
+      const { data, error } = await handleFetchRequest(url, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const authTokensResponse = await response.json();
-
-      if(authTokensResponse.statusCode && authTokensResponse.message) {
-        throw new Error(authTokensResponse.message);
-      }
-
-      if(!authTokensResponse.success) {
-        const message = authTokensResponse.error.message;
-        throw new Error(message);
-      }
-
-      const { accessToken, refreshToken } = authTokensResponse.data.tokens;
+      if(error) throw new Error(error.message);
+      const { accessToken, refreshToken } = data.tokens;
       localStorage.removeItem(StorageItemName);
       localStorage.setItem(StorageItemName, JSON.stringify({ refreshToken, id }));
       return accessToken;
@@ -118,43 +115,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
-  const loadUser = useCallback(async () => {
+  const loadUser = async () => {
+    if(stateUser && stateUser.accessToken) return;
     try {
-      let accessToken = state.user ? state.user.accessToken : null;
-      if (!accessToken) {
-        const token = await getNewAuthTokens();
-        if(!token) return;
-
-        accessToken = token;
-      };
-      
+      let accessToken = await getNewAuthTokens();
+      if (!accessToken) return;
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}auth/profile`;
-      const response = await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
+      const { data, error } = await handleFetchRequest(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
-      const userResponse = await response.json();
-
-      if (userResponse.statusCode && userResponse.message) {
-        throw new Error(userResponse.message);
+      if(error) throw new Error(error.message);
+      const user = data.user;
+      if(user) {
+        dispatch({ type: ActionType.Login, payload: { ...user, accessToken } });
       }
-
-      if (!userResponse.success) {
-        const message = userResponse.error.message
-        throw new Error(message);
-      }
-
-      const user = userResponse.data.user;
-      dispatch({ type: ActionType.Login, payload: { ...user, accessToken } });
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      await logoutUser();
       localStorage.removeItem(StorageItemName);
     } finally {
       dispatch({ type: ActionType.StopLoading });
     }
-  }, []);
+  };
 
   useEffect(() => {
     loadUser();
@@ -170,10 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 export const useAuthState = () => useContext(StateContext);
-export const useAuthDispatch: () => Dispatch = () => {
-  return useContext(DispatchContext);
-};
-
+export const useAuthDispatch: () => Dispatch = () => useContext(DispatchContext);
 export const StorageItemName = "online-cafe-context";
 export const getStorageAuthContext = (): { refreshToken: string; id: string } => {
   const authContext = localStorage.getItem(StorageItemName);

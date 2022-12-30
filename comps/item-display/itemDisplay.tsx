@@ -1,6 +1,5 @@
-import Link from "next/link";
 import React from "react";
-import { useAuthState } from "../../authContext";
+import { useCart } from "../../hooks/useCart";
 
 import { ProductType } from "../../pages/menu/items/[id]";
 
@@ -9,38 +8,8 @@ type ItemDisplayProps = {
 };
 
 const ItemDisplay: React.FC<ItemDisplayProps> = ({ item }) => {
-  const { user } = useAuthState()
+  const { addCartItem } = useCart();
   const { id, name, price, description, tags } = item;
-
-  const onAddToCart = async () => {
-    if(!user) return;
-    
-    try {
-      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}cart`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.accessToken}`
-        },
-        body: JSON.stringify({ productId: id }),
-      });
-      const addToCartResponse = await response.json();
-
-      if (addToCartResponse.statusCode && addToCartResponse.message) {
-        throw new Error(addToCartResponse.message);
-      }
-
-      if (!addToCartResponse.success) {
-        throw new Error(addToCartResponse.error.message);
-      }
-
-      const successMessage = addToCartResponse.data.message;
-      console.log({ successMessage });
-    } catch (err) {
-      console.error(err);
-    }
-  }
 
   return (
     <div className="flex flex-col mb-3">
@@ -61,7 +30,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item }) => {
       </div>
 
       <div className="flex justify-end">
-          <button onClick={onAddToCart} className="px-3 py-2 text-white font-medium bg-accent-color rounded">
+          <button onClick={() => addCartItem(id)} className="px-3 py-2 text-white font-medium bg-accent-color rounded">
             Add to Cart
           </button>
       </div>

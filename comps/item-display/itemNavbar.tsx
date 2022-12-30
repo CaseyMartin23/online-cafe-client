@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { CartNotificationButton } from "../../pages/cart";
 
 const ItemNavbar: React.FC = () => {
   return (
@@ -23,7 +24,7 @@ const ItemNavbar: React.FC = () => {
         </a>
       </Link>
       <div className="flex flex-row w-full p-2 justify-end">
-        <div className="w-8 h-8 mx-1 bg-slate-500 rounded-full"></div>
+        <CartNotificationButton />
         <div className="w-8 h-8 mx-1 bg-slate-500 rounded-full"></div>
       </div>
     </div>
@@ -31,3 +32,5 @@ const ItemNavbar: React.FC = () => {
 };
 
 export default ItemNavbar;
+
+

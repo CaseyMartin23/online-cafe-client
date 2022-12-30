@@ -32,7 +32,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="w-full py-2 px-4 bg-creamy-beige">
       <div className="flex flex-row">
-        <h1 className="text-xl text-accent-color font-bold mr-auto my-auto">
+        <h1 className="text-xl text-accent-color font-extrabold mr-auto my-auto">
           Online Cafe
         </h1>
         {authenticated ? <ProfileBtn /> : <LoginBtn />}
