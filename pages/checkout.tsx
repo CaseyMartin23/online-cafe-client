@@ -14,7 +14,7 @@ export enum CheckoutProgressStates {
   Summary = "SUMMARY",
 }
 
-const checkout: NextPage = () => {
+const Checkout: NextPage = () => {
   const [progressState, setProgressState] = useState<CheckoutProgressStates>(
     CheckoutProgressStates.Address
   );
@@ -50,4 +50,4 @@ const checkout: NextPage = () => {
   );
 };
 
-export default checkout;
+export default Checkout;

@@ -1,9 +1,9 @@
-import React from "react";
+import React from "react"
 import { NextPage } from "next";
 import Head from "next/head";
 import PageLayout from "../comps/pageLayout";
 
-const PasswordRecoveryPage: NextPage = () => {
+const PaymentPage: NextPage = () => {
   return (
     <PageLayout>
       <Head>
@@ -13,10 +13,14 @@ const PasswordRecoveryPage: NextPage = () => {
       </Head>
 
       <main>
-        <h1>Forgot Password Page</h1>
+        <form>
+          <label>Payment form</label>
+          <input type="text" />
+          <button type="submit">submit</button>
+        </form>
       </main>
     </PageLayout>
-  );
-};
+  )
+}
 
-export default PasswordRecoveryPage;
+export default PaymentPage;

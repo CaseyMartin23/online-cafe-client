@@ -84,6 +84,9 @@ const AddressDisplay: React.FC = () => {
     selectDefaultAddress,
     removeAddress,
   } = useAddress();
+  const noAddresses = addresses.length < 1;
+
+  useEffect(() => console.log({ addresses }), [addresses])
 
   return (
     <div className="flex flex-col h-full w-full bg-slate-200">
@@ -96,7 +99,8 @@ const AddressDisplay: React.FC = () => {
       </div>
 
       <div className="flex flex-col flex-grow address-item-container overflow-x-auto px-3 py-1 mt-1 mb-5">
-        {isLoading && !addresses && <div>Loading...</div>}
+        {isLoading && noAddresses && <div>Loading...</div>}
+        {!isLoading && noAddresses && <div>No Addresses</div>}
         {!isLoading && addresses.map((address, index) => (
           <AddressItem
             key={`${address.id}-${index}`}

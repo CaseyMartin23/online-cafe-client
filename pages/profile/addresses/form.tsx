@@ -1,42 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-
 import BackwardsNavbar from "../../../comps/backwardsNavbar";
 import AddressForm from "../../../comps/address/addressForm";
+import { useAddress } from "../../../hooks/useAddress";
 
 export type AddressFormDataType = {
+  [index: string]: any;
   firstName: string;
   lastName: string;
   streetAddress: string;
-  aptAddress: string;
+  aptAddress?: string;
   city: string;
   state: string;
-  country: string;
   zip: string;
   phoneNumber: string;
 };
 
+const FieldKeyToName: AddressFormDataType = {
+  firstName: "First name",
+  lastName: "Last name",
+  streetAddress: "Street address",
+  aptAddress: "Apartment address",
+  city: "City",
+  state: "State",
+  zip: "ZIP code",
+  phoneNumber: "Phone number",
+}
+
 const IndexAddressForm: React.FC = () => {
   const { query } = useRouter();
-  const editAddressId = query.item;
+  const { getAddress, createAddress, updateAddress } = useAddress();
+  const editAddressId = query.item && typeof query.item === "string" ? query.item : "";
   const newAddressForm = {
     firstName: "",
     lastName: "",
     streetAddress: "",
-    aptAddress: "",
     city: "",
     state: "",
-    country: "",
     zip: "",
     phoneNumber: "",
   };
   const [formData, setFormData] = useState<AddressFormDataType>(newAddressForm);
+  const [formErrors, setFormErrors] = useState<AddressFormDataType>({
+    firstName: "",
+    lastName: "",
+    streetAddress: "",
+    city: "",
+    state: "",
+    zip: "",
+    phoneNumber: "",
+  });
 
   const handleInputChange = ({
     target,
   }: React.ChangeEvent<HTMLInputElement>) => {
     const { value, dataset } = target;
     const { field } = dataset;
+    setFormErrors({ ...formErrors, [`${field}`]: "" });
     setFormData({ ...formData, [`${field}`]: value });
   };
 
@@ -45,42 +65,93 @@ const IndexAddressForm: React.FC = () => {
     history.back();
   };
 
-  const handleFormSubmit = () => {
-    console.log("form submited:", formData);
+  const validateFormData = () => {
+    let errors: any = { ...formErrors };
+    let hasErrors = false;
+    for (const key in formData) {
+      const value = formData[key];
+      const emptyValue = value === "";
+
+      if (value && emptyValue && key !== "aptAddress"){
+        hasErrors = true;
+        errors = { ...errors, [key]: `${FieldKeyToName[key]} cannot empty` };
+      }
+      if (value && !emptyValue && value.length < 2) {
+        hasErrors = true;
+        errors = { ...errors, [key]: `${FieldKeyToName[key]} must be greater than 2 characters` };
+      }
+      if (value && !emptyValue && value.length > 30) {
+        hasErrors = true;
+        errors = { ...errors, [key]: `${FieldKeyToName[key]} must be less than 30 characters` };
+      }
+      if (value && !emptyValue && (key == "firstName" || key == "lastName") && !new RegExp(/\b([A-ZÀ-ÿ][-,a-z. ']+[ ]*)+/g).test(value)) {
+        hasErrors = true;
+        errors = { ...errors, [key]: `${FieldKeyToName[key]} must be valid english letters` };
+      }
+      if (value && !emptyValue && key == "zip" && !new RegExp(/([0-9]){4,9}/).test(value)) {
+        hasErrors = true;
+        errors = { ...errors, [key]: `${FieldKeyToName[key]} must be between 4 to 9 digits` };
+      }
+      if (value && !emptyValue && key == "phoneNumber" && !new RegExp(/(\d |)(\(?\d{3}\)?)-? *\d{3}-? *-?\d{4}/g).test(value)) {
+        hasErrors = true;
+        errors = { ...errors, [key]: `${FieldKeyToName[key]} must be 10 digits` };
+      }
+    }
+    setFormErrors(errors);
+    return hasErrors;
+  }
+
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (validateFormData()) return;
+    
+    if (editAddressId) {
+      await updateAddress(editAddressId, formData);
+    } else {
+      await createAddress(formData);
+    }
+
+    history.back();
   };
 
   useEffect(() => {
+    const abortController = new AbortController();
+    
     if (editAddressId) {
-      setFormData({
-        firstName: "TEST-EDIT-ADDRESS-FIRSTNAME",
-        lastName: "TEST-EDIT-ADDRESS-LASTNAME",
-        streetAddress: "TEST-EDIT-ADDRESS-STREETADDRESS",
-        aptAddress: "TEST-EDIT-ADDRESS-APTADDRESS",
-        city: "TEST-EDIT-ADDRESS-CITY",
-        country: "TEST-EDIT-ADDRESS-COUNTRY",
-        state: "TEST-EDIT-ADDRESS-STATE",
-        zip: "TEST-EDIT-ADDRESS-ZIP",
-        phoneNumber: "TEST-EDIT-ADDRESS-PHONENUMBER",
-      });
+      const getAddressData = async () => {
+        const fetchedAddress = await getAddress(editAddressId, abortController.signal);
+        if(fetchedAddress) {
+          const { firstName, lastName, streetAddress, aptAddress, city, state, zip, phoneNumber } = fetchedAddress;
+          setFormData({
+            firstName,
+            lastName,
+            streetAddress,
+            aptAddress: aptAddress ? aptAddress : undefined,
+            city,
+            state,
+            zip,
+            phoneNumber,
+          });
+        }
+      }
+      getAddressData();
     } else {
       setFormData(newAddressForm);
     }
+
+    return () => abortController.abort();
   }, [editAddressId]);
 
   return (
-    <div className="w-full h-screen bg-white mb-12">
-      <div className="flex flex-col p-6 items-center">
-        <BackwardsNavbar
-          label={editAddressId ? "Edit Address" : "Add New Address"}
-        />
-
-        <AddressForm
-          formData={formData}
-          onInputChange={handleInputChange}
-          onCancelForm={handleFormCancel}
-          onSubmitForm={handleFormSubmit}
-        />
-      </div>
+    <div className="w-full bg-white">
+      <BackwardsNavbar label={editAddressId ? "Edit Address" : "Add New Address"} />
+      <AddressForm
+        formData={formData}
+        formErrors={formErrors}
+        onInputChange={handleInputChange}
+        onCancelForm={handleFormCancel}
+        onSubmitForm={handleFormSubmit}
+      />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import Head from "next/head";
 import AddressDisplay from "../../../comps/address/addressDisplay";
 import BackwardsNavbar from "../../../comps/backwardsNavbar";
 import PageLayout from "../../../comps/pageLayout";
+import { NextPage } from "next";
 
 export type AddressType = {
   id: string;
@@ -19,7 +20,7 @@ export type AddressType = {
   isSelected: boolean;
 };
 
-const DeliveryAddresses: React.FC = () => {
+const DeliveryAddresses: NextPage = () => {
   return (
     <PageLayout>
       <Head>
@@ -28,7 +29,7 @@ const DeliveryAddresses: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
+      <main className="h-full">
         <BackwardsNavbar label="Delivery Address" />
         <AddressDisplay />
       </main>

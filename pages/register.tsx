@@ -167,7 +167,7 @@ const RegisterPage: NextPage = () => {
               Welcome to Online-Cafe
             </h1>
             <h4 className="text-lg text-slate-500">
-              Let's make you an account.
+              Let&apos;s make you an account.
             </h4>
           </div>
           <div>

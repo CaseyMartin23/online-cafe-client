@@ -173,7 +173,7 @@ const LoginPage: NextPage = () => {
               </button>
 
               <div className="text-center mt-5">
-                Don't have an account?
+                Don&apos;t have an account?
                 <Link href="/register">
                   <a className="text-accent-color ml-1">Register</a>
                 </Link>

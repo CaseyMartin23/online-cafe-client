@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { CheckoutProgressStates } from "../../pages/checkout";
 import AddressDisplay from "../address/addressDisplay";
-import PaymentDisplay from "./payment/paymentDisplay";
+import PaymentMethodsDisplay from "./payment/paymentMethodsDisplay";
 import SummaryDisplay from "./summary/summaryDisplay";
 
 type CheckoutProgressContentProps = {
@@ -27,11 +27,9 @@ const ProceedButton: React.FC<ProceedButtonProp> = ({
   return (
     <>
       {isLastState && (
-        <div className="flex flex-row w-full h-14 absolute justify-end px-3 pb-2 pt-3">
           <button
-            onClick={clickHandler}
-            className="flex flex-row items-center bg-accent-color text-white rounded px-3 py-1 w-20"
-          >
+            className="flex flex-row items-center absolute right-0 mr-3 mt-3 px-3 py-2 w-20 rounded bg-accent-color text-white"
+            onClick={clickHandler}>
             Next
             <div className="flex ml-1">
               <svg
@@ -49,7 +47,6 @@ const ProceedButton: React.FC<ProceedButtonProp> = ({
               </svg>
             </div>
           </button>
-        </div>
       )}
     </>
   );
@@ -71,7 +68,7 @@ const CheckoutProgressContent: React.FC<CheckoutProgressContentProps> = ({
     },
     {
       value: Payment,
-      Content: PaymentDisplay,
+      Content: PaymentMethodsDisplay,
     },
     {
       value: Summary,

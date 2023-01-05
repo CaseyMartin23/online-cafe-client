@@ -12,7 +12,7 @@ export const handleFetchRequest = async (url: string, options?: UseFetchOptionsT
       ["Content-Type"]: "application/json",
     },
   }
-
+  
   if (body) {
     defaultOptions = {
       ...defaultOptions,
@@ -40,31 +40,30 @@ export const handleFetchRequest = async (url: string, options?: UseFetchOptionsT
   return { loading, data, error };
 }
 
-const makeFetchRequest = async (url: string, options: RequestInit, loading: boolean, data: any, error: Error | null) => {
-  try {
-    loading = true;
-    const fetchResponse = await fetch(url, options);
-    const parsedResponse = await fetchResponse.json()
-    if (parsedResponse.statusCode && parsedResponse.message) {
-      throw new Error(parsedResponse.message);
-    }
-    if (!parsedResponse.success && parsedResponse.error) {
-      throw new Error(parsedResponse.error.message);
-    }
-    data = parsedResponse.data;
-  } catch (err) {
-    error = err as Error;
-  } finally {
-    loading = false;
-  }
-}
+// const makeFetchRequest = async (url: string, options: RequestInit, loading: boolean, data: any, error: Error | null) => {
+//   try {
+//     loading = true;
+//     const fetchResponse = await fetch(url, options);
+//     const parsedResponse = await fetchResponse.json()
+//     if (parsedResponse.statusCode && parsedResponse.message) {
+//       throw new Error(parsedResponse.message);
+//     }
+//     if (!parsedResponse.success && parsedResponse.error) {
+//       throw new Error(parsedResponse.error.message);
+//     }
+//     data = parsedResponse.data;
+//   } catch (err) {
+//     error = err as Error;
+//   } finally {
+//     loading = false;
+//   }
+// }
 
 export const stringListToArray = (stringList: string | string[] | undefined) => {
   if (stringList) {
     if (Array.isArray(stringList)) return stringList;
-    const arrayOfStrings = stringList.split(",");
-    const singlelistItem = [stringList];
-    return stringList.includes(",") ? arrayOfStrings : singlelistItem;
+    if (stringList.includes(",")) return stringList.split(",");
+    return [stringList];
   } else {
     return [];
   }

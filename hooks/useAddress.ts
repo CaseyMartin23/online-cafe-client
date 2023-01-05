@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react"
 import { useAuthState } from "../authContext";
 import { AddressType } from "../pages/profile/addresses";
+import { AddressFormDataType } from "../pages/profile/addresses/form";
 import { handleFetchRequest, isObjectsDeepEqual } from "../utils";
 
-type CreateAddressType = {
-  firstName: string;
-  lastName: string;
-  streetAddress: string;
-  aptAddress: string;
-  city: string;
-  state: string;
-  country: string;
-  zip: string;
-  phoneNumber: string;
+type AddressResponseType = {
+  data: { items: AddressFormDataType[] }; 
+  error: Error | null
 };
 
 export const useAddress = () => {
@@ -21,7 +15,7 @@ export const useAddress = () => {
   const [isLoading, setIsLoading] = useState(false);
   const requestOptions = { headers: { Authorization: `Bearer ${user?.accessToken}` } };
 
-  const createAddress = async (address: CreateAddressType) => {
+  const createAddress = async (address: AddressFormDataType, signal?: AbortSignal) => {
     try {
       setIsLoading(true);
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
@@ -35,13 +29,14 @@ export const useAddress = () => {
     }
   }
 
-  const selectDefaultAddress = async (id: string) => {
+  const selectDefaultAddress = async (id: string, signal?: AbortSignal) => {
     try {
       setIsLoading(true);
-      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
-      const { data, error } = await handleFetchRequest(url, requestOptions);
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses/select/${id}`;
+      const { data, error } = await handleFetchRequest(url, { ...requestOptions, method: "PATCH" });
       if (error) throw new Error(error.message);
-      console.log({ data });
+      console.log({ message: data.message });
+      setAddresses([]);
     } catch (err) {
       console.error(err);
     } finally {
@@ -49,27 +44,14 @@ export const useAddress = () => {
     }
   }
 
-  const updateAddress = async (id: string) => {
-    try {
-      setIsLoading(true);
-      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
-      const { data, error } = await handleFetchRequest(url, requestOptions);
-      if (error) throw new Error(error.message);
-      console.log({ data });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  const removeAddress = async (id: string) => {
+  const updateAddress = async (id: string, updatedAddress: AddressFormDataType, signal?: AbortSignal) => {
     try {
       setIsLoading(true);
       const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses/${id}`;
-      const { data, error } = await handleFetchRequest(url, { ...requestOptions, method: "DELETE" });
+      const { data, error } = await handleFetchRequest(url, { ...requestOptions, method: "PATCH", signal }, updatedAddress);
       if (error) throw new Error(error.message);
-      console.log({ data });
+      console.log({ message: data.message });
+      setAddresses([]);
     } catch (err) {
       console.error(err);
     } finally {
@@ -77,13 +59,15 @@ export const useAddress = () => {
     }
   }
 
-  const getAddress = async (id: string) => {
+  const removeAddress = async (id: string, signal?: AbortSignal) => {
     try {
       setIsLoading(true);
-      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses`;
-      const { data, error } = await handleFetchRequest(url, requestOptions);
+      console.log({ idToRemove: id });
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses/${id}`;
+      const { data, error } = await handleFetchRequest(url, { ...requestOptions, method: "DELETE" });
       if (error) throw new Error(error.message);
-      console.log({ data });
+      console.log({ message: data.message });
+      setAddresses([]);
     } catch (err) {
       console.error(err);
     } finally {
@@ -91,7 +75,21 @@ export const useAddress = () => {
     }
   }
 
-  const getAddresses = async () => {
+  const getAddress = async (id: string, signal?: AbortSignal) => {
+    try {
+      setIsLoading(true);
+      const url = `${process.env.NEXT_PUBLIC_API_DOMAIN}addresses/${id}`;
+      const { data, error }: AddressResponseType = await handleFetchRequest(url, { ...requestOptions, signal });
+      if (error) throw new Error(error.message);
+      return data.items[0];
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const getAddresses = async (signal?: AbortSignal) => {
     try {
       setIsLoading(true);
       if (!user) return;
